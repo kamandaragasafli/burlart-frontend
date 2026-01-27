@@ -18,7 +18,7 @@ import { AlertCircle, Zap, Search, X, Heart } from 'lucide-react'
 export default function Dashboard() {
   const navigate = useNavigate()
   const { credits } = useCreditStore()
-  const { user, updateCredits, fetchProfile } = useAuthStore()
+  const { user, updateCredits } = useAuthStore()
   const { showSearch, setShowSearch } = useSearchStore()
   const { favoriteTools, recentlyUsed, addRecentlyUsed } = useFavoritesStore()
   const t = useTranslation()

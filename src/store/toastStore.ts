@@ -29,16 +29,16 @@ export const useToastStore = create<ToastStore>((set) => ({
   removeToast: (id) => {
     set((state) => ({ toasts: state.toasts.filter((toast) => toast.id !== id) }))
   },
-  success: (message, duration) => {
+  success: (message: string, duration?: number): string => {
     return useToastStore.getState().showToast('success', message, duration)
   },
-  error: (message, duration) => {
+  error: (message: string, duration?: number): string => {
     return useToastStore.getState().showToast('error', message, duration)
   },
-  info: (message, duration) => {
+  info: (message: string, duration?: number): string => {
     return useToastStore.getState().showToast('info', message, duration)
   },
-  warning: (message, duration) => {
+  warning: (message: string, duration?: number): string => {
     return useToastStore.getState().showToast('warning', message, duration)
   },
 }))

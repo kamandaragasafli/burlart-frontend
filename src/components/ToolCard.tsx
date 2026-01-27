@@ -17,7 +17,7 @@ const iconMap: Record<string, any> = {
 }
 
 export default function ToolCard({ tool, onUse }: ToolCardProps) {
-  const { credits, hasEnoughCredits } = useCreditStore()
+  const { hasEnoughCredits } = useCreditStore()
   const Icon = iconMap[tool.icon] || Video
   const canUse = tool.enabled && hasEnoughCredits(tool.creditCost)
 

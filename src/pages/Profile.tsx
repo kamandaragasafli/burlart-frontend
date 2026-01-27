@@ -116,7 +116,7 @@ export default function Profile() {
     )
   }
 
-  const joinDate = new Date(user.created_at || '2024-01-15').toLocaleDateString('az-AZ', {
+  const joinDate = new Date((user as any).created_at || '2024-01-15').toLocaleDateString('az-AZ', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -167,7 +167,7 @@ export default function Profile() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {user.first_name || user.email.split('@')[0]}
+                      {user.first_name || (user.email ? user.email.split('@')[0] : 'User')}
                     </h2>
                     <p className="text-gray-600 dark:text-gray-400">{user.email}</p>
                   </div>

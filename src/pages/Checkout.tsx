@@ -17,7 +17,6 @@ export default function Checkout() {
   const planId = searchParams.get('plan')
   const packageId = searchParams.get('package')
   
-  const [loading, setLoading] = useState(false)
   const [processing, setProcessing] = useState(false)
 
   useEffect(() => {
@@ -44,7 +43,7 @@ export default function Checkout() {
 
       if (type === 'subscription' && planId) {
         // Create subscription
-        const result = await subscriptionAPI.createSubscription(planId, true)
+        await subscriptionAPI.createSubscription(planId, true)
         
         // Mock: Simulate E-point redirect
         // In production: window.location.href = result.payment_url

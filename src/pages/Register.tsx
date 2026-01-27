@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Mail, Lock, Loader2, Sparkles, User } from 'lucide-react'
+import { Mail, Lock, Loader2, Sparkles } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 import { useTranslation } from '../store/languageStore'
 import SEO from '../components/SEO'

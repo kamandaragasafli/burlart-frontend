@@ -11,7 +11,6 @@ export default function CheckoutSuccess() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { user, updateCredits, fetchProfile } = useAuthStore()
-  const t = useTranslation()
   const { success } = useToastStore()
 
   const type = searchParams.get('type')

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { X, Loader2 } from 'lucide-react'
-import { useCreditStore } from '../store/creditStore'
 import { useAuthStore } from '../store/authStore'
 import { useToastStore } from '../store/toastStore'
 import { topupAPI } from '../services/api'

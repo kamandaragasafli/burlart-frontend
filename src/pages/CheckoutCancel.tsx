@@ -6,7 +6,6 @@ import SEO from '../components/SEO'
 export default function CheckoutCancel() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const t = useTranslation()
 
   const error = searchParams.get('error')
 

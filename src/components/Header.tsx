@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Search, History, Zap, Sparkles } from 'lucide-react'
 import { useCreditStore } from '../store/creditStore'
@@ -11,7 +11,7 @@ import ThemeToggle from './ThemeToggle'
 
 export default function Header() {
   const { credits } = useCreditStore()
-  const { isAuthenticated, fetchProfile, isLoading } = useAuthStore()
+  const { isAuthenticated } = useAuthStore()
   const { toggleSearch } = useSearchStore()
   const navigate = useNavigate()
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)

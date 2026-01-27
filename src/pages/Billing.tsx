@@ -4,7 +4,7 @@ import { useTranslation } from '../store/languageStore'
 import { subscriptionAPI, topupAPI } from '../services/api'
 import SEO from '../components/SEO'
 import CreditModal from '../components/CreditModal'
-import { Calendar, CreditCard, Package, Download, ArrowUpCircle, ArrowDownCircle } from 'lucide-react'
+import { Calendar, CreditCard, Package, Download } from 'lucide-react'
 
 interface Subscription {
   plan: string
