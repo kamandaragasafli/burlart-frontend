@@ -1,6 +1,5 @@
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { XCircle, ArrowLeft } from 'lucide-react'
-import { useTranslation } from '../store/languageStore'
 import SEO from '../components/SEO'
 
 export default function CheckoutCancel() {

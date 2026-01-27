@@ -183,7 +183,7 @@ export default function Checkout() {
           {/* Payment Button */}
           <button
             onClick={handlePayment}
-            disabled={processing || loading}
+            disabled={processing}
             className="w-full py-4 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded-lg font-semibold text-lg transition-colors flex items-center justify-center space-x-2"
           >
             {processing ? (

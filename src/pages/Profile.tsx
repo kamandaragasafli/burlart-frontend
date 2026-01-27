@@ -167,7 +167,7 @@ export default function Profile() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {user.first_name || (user.email ? user.email.split('@')[0] : 'User')}
+                      {(user as any).first_name || (user.email ? user.email.split('@')[0] : 'User')}
                     </h2>
                     <p className="text-gray-600 dark:text-gray-400">{user.email}</p>
                   </div>
