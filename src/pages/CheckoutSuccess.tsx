@@ -17,6 +17,8 @@ export default function CheckoutSuccess() {
   const packageId = searchParams.get('package')
   const purchaseId = searchParams.get('purchase_id')
   const paymentId = searchParams.get('payment_id')
+  const transactionId = searchParams.get('transaction_id')
+  const isMock = searchParams.get('mock') === 'true'
 
   const [processing, setProcessing] = useState(true)
 
@@ -28,6 +30,24 @@ export default function CheckoutSuccess() {
 
     const completePayment = async () => {
       try {
+        // If this is a mock payment, we need to complete it via webhook simulation
+        if (isMock && transactionId) {
+          // For mock payments, the backend should auto-complete via webhook
+          // But we can also manually trigger completion
+          // Wait a bit for webhook to process, then refresh
+          setTimeout(async () => {
+            await fetchProfile()
+            if (type === 'subscription') {
+              await subscriptionAPI.getInfo()
+              success('Abunəlik uğurla aktivləşdirildi!')
+            } else if (type === 'topup') {
+              success('Kreditlər hesabınıza əlavə olundu!')
+            }
+            setProcessing(false)
+          }, 2000)
+          return
+        }
+
         if (type === 'subscription' && planId && paymentId) {
           // Subscription payment completed
           await subscriptionAPI.getInfo() // Refresh subscription info
@@ -45,6 +65,12 @@ export default function CheckoutSuccess() {
           await fetchProfile()
           
           success(`${result.credits_purchased || result.total_credits} kredit hesabınıza əlavə olundu!`)
+        } else {
+          // No specific type, just refresh
+          await fetchProfile()
+          if (type === 'subscription') {
+            await subscriptionAPI.getInfo()
+          }
         }
       } catch (error: any) {
         console.error('Payment completion error:', error)
@@ -54,7 +80,7 @@ export default function CheckoutSuccess() {
     }
 
     completePayment()
-  }, [user, type, planId, packageId, purchaseId, paymentId, navigate, updateCredits, fetchProfile, success])
+  }, [user, type, planId, packageId, purchaseId, paymentId, transactionId, isMock, navigate, updateCredits, fetchProfile, success])
 
   if (processing) {
     return (

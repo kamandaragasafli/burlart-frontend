@@ -8,6 +8,7 @@ import {
 } from '../store/languageStore'
 import { useThemeStore } from '../store/themeStore'
 import SEO from '../components/SEO'
+import ModernBackground from '../components/ModernBackground'
 
 export default function Settings() {
   const navigate = useNavigate()
@@ -24,7 +25,7 @@ export default function Settings() {
   ]
 
   return (
-    <div className="min-h-screen bg-white dark:bg-dark-bg">
+    <ModernBackground>
       <SEO 
         title="Tənzimləmələr"
         description="Hesab tənzimləmələri, dil və tema seçimləri"
@@ -239,7 +240,7 @@ export default function Settings() {
           </div>
         </div>
       </div>
-    </div>
+    </ModernBackground>
   )
 }
 

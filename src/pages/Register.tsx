@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Mail, Lock, Loader2, Sparkles } from 'lucide-react'
+import { Mail, Lock, Loader2, Sparkles, ArrowRight } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 import { useTranslation } from '../store/languageStore'
+import { useThemeStore } from '../store/themeStore'
 import SEO from '../components/SEO'
 
 export default function Register() {
@@ -16,6 +17,14 @@ export default function Register() {
   const { register, loginWithGoogle, isAuthenticated } = useAuthStore()
   const t = useTranslation()
   const navigate = useNavigate()
+  const { theme } = useThemeStore()
+  const videoSrc = theme === 'dark' ? '/backround.mp4' : '/background-white.mp4'
+
+  // Show Google login only on main server (not on localhost)
+  const isLocalhost =
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  const showGoogleLogin = !isLocalhost
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -120,165 +129,205 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-dark-bg flex items-center justify-center px-6 py-12">
+    <div className="min-h-screen bg-white dark:bg-dark-bg flex">
       <SEO 
         title="Qeydiyyat"
         description="Burlart-da qeydiyyatdan keçin və AI video və şəkil yaratmağa başlayın. 500 pulsuz kredit əldə edin."
         url="https://timera.ai/register"
       />
-      <div className="w-full max-w-md">
-        {/* Logo and Title */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Sparkles className="w-8 h-8 text-blue-400" />
-            <span className="text-2xl font-bold italic text-gray-900 dark:text-white">
-              Burlart
-            </span>
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            {t('createAccount') || 'Create Account'}
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            {t('registerToGetStarted') || 'Register to get started with AI tools'}
-          </p>
+      
+      {/* Left Side - Promotional/Visual */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        {/* Video Background */}
+        <div className="absolute inset-0">
+          <video
+            key={videoSrc}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+          >
+            <source src={videoSrc} type="video/mp4" />
+          </video>
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/60 via-purple-900/50 to-pink-900/40"></div>
         </div>
-
-        {/* Register Form */}
-        <div className="bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg shadow-lg p-8">
-          {/* Google Login */}
-          {!googleReady ? (
-            <div className="w-full mb-6 flex items-center justify-center border border-gray-300 dark:border-dark-border rounded-lg py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
-              <Loader2 className="w-4 h-4 animate-spin mr-2" />
-              <span>Loading Google...</span>
-            </div>
-          ) : (
-            <div id="google-register-button" className="mb-6 flex justify-center"></div>
-          )}
-
-          {/* Divider */}
-          <div className="flex items-center mb-6">
-            <div className="flex-1 h-px bg-gray-200 dark:bg-dark-border" />
-            <span className="px-3 text-xs uppercase tracking-wide text-gray-400">
-              or
-            </span>
-            <div className="flex-1 h-px bg-gray-200 dark:bg-dark-border" />
+        
+        {/* Content Overlay */}
+        <div className="relative z-10 flex flex-col justify-between p-12 text-white">
+          {/* Logo */}
+          <div className="flex items-center space-x-3">
+            <Sparkles className="w-8 h-8 text-blue-400" />
+            <span className="text-2xl font-bold italic">Burlart</span>
           </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Error Message */}
-            {error && (
-              <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg p-4 text-sm">
-                {error}
-              </div>
-            )}
-
-            {/* Email Field */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('email') || 'Email'}
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-hover text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={t('enterEmail') || 'Enter your email'}
-                />
-              </div>
-            </div>
-
-            {/* Password Field */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('password') || 'Password'}
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-hover text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={t('enterPassword') || 'Enter your password'}
-                />
-              </div>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                {t('passwordMinLength') || 'Minimum 6 characters'}
-              </p>
-            </div>
-
-            {/* Confirm Password Field */}
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('confirmPassword') || 'Confirm Password'}
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  minLength={6}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-hover text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={t('confirmPassword') || 'Confirm your password'}
-                />
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>{t('registering') || 'Registering...'}</span>
-                </>
-              ) : (
-                <span>{t('register') || 'Register'}</span>
-              )}
-            </button>
-          </form>
-
-          {/* Login Link */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {t('alreadyHaveAccount') || 'Already have an account?'}{' '}
-              <Link
-                to="/login"
-                className="text-blue-500 hover:text-blue-600 font-medium"
-              >
-                {t('login') || 'Login'}
-              </Link>
+          
+          {/* Tagline */}
+          <div className="mb-16">
+            <h2 className="text-4xl font-bold mb-4">
+              {t('heroTitle') || 'Create Amazing Content with AI'}
+            </h2>
+            <p className="text-xl text-white/90">
+              {t('heroSubtitle') || 'Get access to powerful AI tools and create professional videos and images in seconds'}
             </p>
           </div>
-        </div>
-
-        {/* Back to Home */}
-        <div className="mt-6 text-center">
+          
+          {/* Back to Home Link */}
           <Link
             to="/"
-            className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            className="inline-flex items-center space-x-2 px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all"
           >
-            ← {t('backToHome') || 'Back to Home'}
+            <ArrowRight className="w-4 h-4 rotate-180" />
+            <span>Ana Səhifəyə Qayıt</span>
           </Link>
+        </div>
+      </div>
+
+      {/* Right Side - Register Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12 bg-white dark:bg-dark-bg">
+        <div className="w-full max-w-md">
+          {/* Logo and Title - Mobile */}
+          <div className="lg:hidden text-center mb-8">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <Sparkles className="w-8 h-8 text-blue-500" />
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
+                Burlart
+              </span>
+            </div>
+          </div>
+
+          {/* Title */}
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+            {t('createAccount') || 'Hesab Yaradın'}
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-8">
+            {t('alreadyHaveAccount') || 'Hesabınız var?'}{' '}
+            <Link to="/login" className="text-blue-500 hover:text-blue-600 font-semibold">
+              {t('login') || 'Daxil ol'}
+            </Link>
+          </p>
+
+          {/* Register Form Card */}
+          <div className="bg-white dark:bg-dark-card rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-dark-border">
+            {/* Google Login (only on main server) */}
+            {showGoogleLogin && (
+              <>
+                {!googleReady ? (
+                  <div className="w-full mb-6 flex items-center justify-center border border-gray-300 dark:border-dark-border rounded-lg py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    <span>Loading Google...</span>
+                  </div>
+                ) : (
+                  <div id="google-register-button" className="mb-6 flex justify-center"></div>
+                )}
+
+                {/* Divider */}
+                <div className="flex items-center mb-6">
+                  <div className="flex-1 h-px bg-gray-200 dark:bg-dark-border" />
+                  <span className="px-3 text-xs uppercase tracking-wide text-gray-400">
+                    or
+                  </span>
+                  <div className="flex-1 h-px bg-gray-200 dark:bg-dark-border" />
+                </div>
+              </>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Error Message */}
+              {error && (
+                <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg p-4 text-sm">
+                  {error}
+                </div>
+              )}
+
+              {/* Email Field */}
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t('email') || 'Email'}
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-hover text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder={t('enterEmail') || 'Enter your email'}
+                  />
+                </div>
+              </div>
+
+              {/* Password Field */}
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t('password') || 'Password'}
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    autoComplete="new-password"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-hover text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder={t('enterPassword') || 'Enter your password'}
+                  />
+                </div>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  {t('passwordMinLength') || 'Minimum 6 characters'}
+                </p>
+              </div>
+
+              {/* Confirm Password Field */}
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t('confirmPassword') || 'Confirm Password'}
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    autoComplete="new-password"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-hover text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder={t('confirmPassword') || 'Confirm your password'}
+                  />
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-lg shadow-lg text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed font-semibold transition-all duration-300 transform hover:scale-[1.02]"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>{t('registering') || 'Registering...'}</span>
+                  </>
+                ) : (
+                  <span>{t('register') || 'Register'}</span>
+                )}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

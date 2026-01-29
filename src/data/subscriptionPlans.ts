@@ -1,5 +1,5 @@
 export interface SubscriptionPlan {
-  id: 'starter' | 'pro' | 'agency'
+  id: 'demo' | 'starter' | 'pro' | 'agency'
   name: string
   price: number
   currency: string
@@ -10,6 +10,19 @@ export interface SubscriptionPlan {
 }
 
 export const subscriptionPlans: SubscriptionPlan[] = [
+  {
+    id: 'demo',
+    name: 'Demo',
+    price: 0.1,
+    currency: '₼',
+    credits: 500,
+    period: 'gün',
+    features: [
+      'Bütün AI alətlərinə demo giriş',
+      '500 kredit',
+      'Qısa müddətli test paketi',
+    ],
+  },
   {
     id: 'starter',
     name: 'Starter',

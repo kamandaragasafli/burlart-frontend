@@ -34,13 +34,37 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: true,
   
   login: async (email: string, password: string) => {
-    const data = await authAPI.login(email, password);
-    localStorage.setItem('access_token', data.tokens.access);
-    localStorage.setItem('refresh_token', data.tokens.refresh);
-    set({ user: data.user, isAuthenticated: true, isLoading: false });
-    
-    // Sync credits with creditStore
-    useCreditStore.getState().credits = data.user.credits;
+    console.log('[authStore] Login attempt for:', email);
+    try {
+      const data = await authAPI.login(email, password);
+      console.log('[authStore] Login response:', data);
+      
+      // Validate response structure
+      if (!data || !data.tokens || !data.user) {
+        console.error('[authStore] Invalid response structure:', data);
+        throw new Error('Invalid response from server. Missing tokens or user data.');
+      }
+      
+      if (!data.tokens.access || !data.tokens.refresh) {
+        console.error('[authStore] Missing tokens in response:', data);
+        throw new Error('Invalid response from server. Missing access or refresh token.');
+      }
+      
+      console.log('[authStore] Login successful, user:', data.user);
+      localStorage.setItem('access_token', data.tokens.access);
+      localStorage.setItem('refresh_token', data.tokens.refresh);
+      set({ user: data.user, isAuthenticated: true, isLoading: false });
+      
+      // Sync credits with creditStore
+      useCreditStore.getState().credits = data.user.credits;
+      
+      console.log('[authStore] Login completed, isAuthenticated:', true);
+    } catch (error: any) {
+      console.error('[authStore] Login error:', error);
+      console.error('[authStore] Error response:', error.response);
+      console.error('[authStore] Error message:', error.message);
+      throw error; // Re-throw to let Login.tsx handle it
+    }
   },
 
   loginWithGoogle: async (idToken: string) => {

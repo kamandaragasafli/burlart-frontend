@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export type SubscriptionPlan = 'starter' | 'pro' | 'agency' | null
+export type SubscriptionPlan = 'demo' | 'starter' | 'pro' | 'agency' | null
 
 export interface Subscription {
   plan: SubscriptionPlan
@@ -26,8 +26,13 @@ export const useSubscriptionStore = create<SubscriptionStore>((set) => ({
   setSubscription: (plan, autoRenew = true) => {
     const now = new Date()
     const nextMonth = new Date(now)
-    nextMonth.setMonth(nextMonth.getMonth() + 1)
-    
+    // Demo paket üçün daha qısa müddət (məs: 7 gün), digərləri üçün 1 ay
+    if (plan === 'demo') {
+      nextMonth.setDate(nextMonth.getDate() + 7)
+    } else {
+      nextMonth.setMonth(nextMonth.getMonth() + 1)
+    }
+
     set({
       subscription: {
         plan,

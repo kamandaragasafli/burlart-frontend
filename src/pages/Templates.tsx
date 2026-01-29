@@ -1,8 +1,9 @@
 import SEO from '../components/SEO'
+import ModernBackground from '../components/ModernBackground'
 
 export default function Templates() {
   return (
-    <div className="min-h-screen bg-dark-bg">
+    <ModernBackground>
       <SEO 
         title="Şablonlar"
         description="Hazır AI şablonları ilə sürətli video və şəkil yaratma"
@@ -27,7 +28,7 @@ export default function Templates() {
           ))}
         </div>
       </div>
-    </div>
+    </ModernBackground>
   )
 }
 

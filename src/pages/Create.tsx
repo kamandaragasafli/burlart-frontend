@@ -5,10 +5,6 @@ import {
   Sliders, 
   ArrowRight, 
   Eraser,
-  Clock,
-  Share2,
-  Menu,
-  MoreVertical,
   ChevronDown,
   Image as ImageIcon,
   Video as VideoIcon,
@@ -25,6 +21,7 @@ import { useTranslation } from '../store/languageStore'
 import { useToastStore } from '../store/toastStore'
 import SEO from '../components/SEO'
 import CreditModal from '../components/CreditModal'
+import ModernBackground from '../components/ModernBackground'
 
 type ContentType = 'image' | 'video'
 
@@ -272,7 +269,7 @@ export default function Create() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-dark-bg flex flex-col">
+    <ModernBackground className="flex flex-col">
       <SEO 
         title="Yaradıcılıq - AI Video və Şəkil Yarat"
         description="AI modelləri ilə video və şəkillər yaradın. Pika Labs, Sora, Kling AI, Flux, GPT Image və digər güclü alətlər."
@@ -930,48 +927,11 @@ export default function Create() {
         </div>
       )}
 
-      {/* Bottom Project Bar */}
-      <div className="border-t border-gray-200 dark:border-dark-border bg-white dark:bg-dark-card">
-        <div className="container mx-auto px-6 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <button className="flex items-center space-x-2 text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
-                <span>{t('projects') || 'Projects'}</span>
-                <ChevronDown className="w-4 h-4" />
-              </button>
-              <span className="text-gray-400">•</span>
-              <span className="text-gray-800 dark:text-white">{t('firstProject') || 'First project'}</span>
-            </div>
-
-            <div className="flex-1 mx-8">
-              <div className="bg-gray-100 dark:bg-dark-hover rounded-lg px-4 py-2 text-center text-gray-600 dark:text-gray-300 text-sm">
-                {t('noCreationsYet') || 'No creations yet'}
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <button className="flex items-center space-x-2 text-gray-800 dark:text-white hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-                <Clock className="w-4 h-4" />
-                <span className="text-sm">{t('incognito') || 'Incognito'}</span>
-              </button>
-              <button className="p-2 text-gray-800 dark:text-white hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-                <Share2 className="w-4 h-4" />
-              </button>
-              <button className="p-2 text-gray-800 dark:text-white hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-                <Menu className="w-4 h-4" />
-              </button>
-              <button className="p-2 text-gray-800 dark:text-white hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-                <MoreVertical className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
       
       <CreditModal 
         isOpen={showCreditModal} 
         onClose={() => setShowCreditModal(false)} 
       />
-    </div>
+    </ModernBackground>
   )
 }

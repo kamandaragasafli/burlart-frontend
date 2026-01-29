@@ -13,7 +13,6 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const { subscription, setSubscription } = useSubscriptionStore()
   const { addCredits } = useCreditStore()
   const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null)
-  const [autoRenew, setAutoRenew] = useState(true)
 
   if (!isOpen) return null
 
@@ -21,8 +20,8 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
     const plan = subscriptionPlans.find((p) => p.id === planId)
     if (!plan) return
 
-    // Set subscription
-    setSubscription(planId, autoRenew)
+    // Set subscription with auto-renew always enabled in backend
+    setSubscription(planId, true)
 
     // Add credits to balance (existing credits remain)
     addCredits(plan.credits)
@@ -160,25 +159,6 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
                 </div>
               )
             })}
-          </div>
-
-          {/* Auto-renew Option */}
-          <div className="bg-dark-hover rounded-lg p-4 border border-dark-border">
-            <label className="flex items-center space-x-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={autoRenew}
-                onChange={(e) => setAutoRenew(e.target.checked)}
-                className="w-5 h-5 rounded border-dark-border bg-dark-card text-blue-500 focus:ring-blue-500 focus:ring-2"
-              />
-              <div>
-                <span className="text-white font-medium">Avtomatik yenilənmə</span>
-                <p className="text-sm text-gray-400 mt-1">
-                  Paket ay bitəndə avtomatik yenilənir və kredit balansına yeni
-                  aylıq kredit əlavə olunur (köhnə qalıq kreditlərlə davam edir).
-                </p>
-              </div>
-            </label>
           </div>
 
           {/* Info */}

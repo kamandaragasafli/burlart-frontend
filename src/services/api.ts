@@ -7,6 +7,9 @@ const API_BASE_URL =
   // (import.meta as any).env.VITE_API_BASE_URL || 'http://localhost:8000/api/auth';
   (import.meta as any).env.VITE_API_BASE_URL || 'https://api.burlart.az/api/auth';
 
+// Log API base URL for debugging
+console.log('[API] Base URL:', API_BASE_URL);
+
 // Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -65,8 +68,17 @@ export const authAPI = {
   },
   
   login: async (email: string, password: string) => {
-    const response = await api.post('/login/', { email, password });
-    return response.data;
+    console.log('[API] Login request to:', `${API_BASE_URL}/login/`);
+    console.log('[API] Login payload:', { email, password: '***' });
+    try {
+      const response = await api.post('/login/', { email, password });
+      console.log('[API] Login response:', response.status, response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error('[API] Login error:', error);
+      console.error('[API] Login error response:', error.response);
+      throw error;
+    }
   },
 
   loginWithGoogle: async (idToken: string) => {

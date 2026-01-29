@@ -3,6 +3,7 @@ import { useAuthStore } from '../store/authStore'
 import { useTranslation } from '../store/languageStore'
 import { videoAPI, imageAPI } from '../services/api'
 import SEO from '../components/SEO'
+import ModernBackground from '../components/ModernBackground'
 import { Download, Loader2, CheckCircle, XCircle, Clock, Video, Image as ImageIcon } from 'lucide-react'
 
 interface Job {
@@ -160,16 +161,16 @@ export default function MyJobs() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-white dark:bg-dark-bg flex items-center justify-center">
+      <ModernBackground className="flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-600 dark:text-gray-400 mb-4">{t('pleaseLogin')}</p>
         </div>
-      </div>
+      </ModernBackground>
     )
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-dark-bg">
+    <ModernBackground>
       <SEO 
         title="My Jobs - İşlərim"
         description="Yaratdığınız AI video və şəkilləri görüntüləyin və idarə edin."
@@ -309,7 +310,7 @@ export default function MyJobs() {
           </div>
         )}
       </div>
-    </div>
+    </ModernBackground>
   )
 }
 

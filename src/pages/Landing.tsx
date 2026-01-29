@@ -3,44 +3,39 @@ import { useNavigate } from 'react-router-dom'
 import { Check, Zap, Sparkles, Info, ArrowRight, Star } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 import { useTranslation } from '../store/languageStore'
+import { useThemeStore } from '../store/themeStore'
 import { subscriptionPlans } from '../data/subscriptionPlans'
-import { topupAPI } from '../services/api'
 import SEO from '../components/SEO'
 import StructuredData from '../components/StructuredData'
 import CreditModal from '../components/CreditModal'
 
-interface TopUpPackage {
-  id: string
-  name: string
-  price: number
-  currency: string
-  credits: number
-  total_credits: number
-  popular?: boolean
-}
-
 export default function Landing() {
   const navigate = useNavigate()
   const { user } = useAuthStore()
+  const { theme } = useThemeStore()
   const t = useTranslation()
-  const [topupPackages, setTopupPackages] = useState<TopUpPackage[]>([])
   const [showCreditModal, setShowCreditModal] = useState(false)
-  const [loadingTopup, setLoadingTopup] = useState(false)
 
-  // Load top-up packages
+  // Scroll reveal animation
   useEffect(() => {
-    const loadTopupPackages = async () => {
-      try {
-        setLoadingTopup(true)
-        const packages = await topupAPI.getPackages()
-        setTopupPackages(packages)
-      } catch (error) {
-        console.error('Failed to load top-up packages:', error)
-      } finally {
-        setLoadingTopup(false)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active')
+          }
+        })
+      },
+      {
+        threshold: 0.15,
+        rootMargin: '0px'
       }
-    }
-    loadTopupPackages()
+    )
+
+    const elements = document.querySelectorAll('.scroll-reveal')
+    elements.forEach((el) => observer.observe(el))
+
+    return () => observer.disconnect()
   }, [])
 
   const handleGetStarted = () => {
@@ -59,14 +54,6 @@ export default function Landing() {
     }
   }
 
-  const handleSelectTopup = (packageId: string) => {
-    if (user) {
-      navigate(`/checkout?type=topup&package=${packageId}`)
-    } else {
-      navigate(`/register?redirect=/checkout?type=topup&package=${packageId}`)
-    }
-  }
-
   return (
     <div className="min-h-screen bg-white dark:bg-dark-bg">
       <SEO 
@@ -79,33 +66,89 @@ export default function Landing() {
       <StructuredData type="Organization" />
 
       {/* Hero Section */}
-      <div className="container mx-auto px-6 py-16">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="mb-8">
-            <Sparkles className="w-16 h-16 text-blue-400 mx-auto mb-4" />
-            <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              {t('heroTitle')}
-            </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
-              {t('heroSubtitle')}
-            </p>
-          </div>
-
-          <button
-            onClick={handleGetStarted}
-            className="flex items-center space-x-2 px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold text-lg transition-colors mx-auto"
+      <div className="relative overflow-hidden min-h-[90vh] flex items-center">
+        {/* Video Background - Full Size, Centered - Changes based on theme */}
+        <div className="absolute inset-0 z-0">
+          <video
+            key={theme} // Force re-render when theme changes
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
           >
-            <Zap className="w-5 h-5" />
-            <span>{t('startButton')}</span>
-            <ArrowRight className="w-5 h-5" />
-          </button>
+            <source 
+              src={theme === 'dark' ? '/backround.mp4' : '/background-white.mp4'} 
+              type="video/mp4" 
+            />
+          </video>
+        </div>
+
+        <div className="container mx-auto px-6 py-24 relative z-10">
+          <div className="max-w-5xl mx-auto text-center">
+            <div className="mb-12 space-y-8">
+              {/* Animated Icon */}
+              <div className="relative inline-block">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur-2xl opacity-40 animate-pulse"></div>
+                <Sparkles className="w-20 h-20 text-blue-500 dark:text-blue-400 mx-auto relative z-10" />
+              </div>
+
+              {/* Main Heading with Gradient */}
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400">
+                  {t('heroTitle')}
+                </span>
+              </h1>
+
+              {/* Subtitle */}
+              <p className="text-xl md:text-2xl text-gray-100 dark:text-gray-200 mb-12 max-w-3xl mx-auto leading-relaxed">
+                {t('heroSubtitle')}
+              </p>
+            </div>
+
+            {/* CTA Button with Glow Effect */}
+            <div className="flex justify-center items-center space-x-4">
+              <button
+                onClick={handleGetStarted}
+                className="group relative inline-flex items-center space-x-3 px-10 py-5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-2xl font-bold text-lg transition-all duration-300 shadow-2xl hover:shadow-blue-500/50 dark:shadow-purple-500/50 transform hover:scale-105"
+              >
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
+                <Zap className="w-6 h-6 relative z-10 group-hover:animate-pulse" />
+                <span className="relative z-10">{t('startButton')}</span>
+                <ArrowRight className="w-6 h-6 relative z-10 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+
+            {/* Features Pills */}
+            <div className="flex flex-wrap justify-center gap-3 mt-12">
+              <span className="px-4 py-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
+                🎥 AI Video
+              </span>
+              <span className="px-4 py-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
+                🖼️ AI Image
+              </span>
+              <span className="px-4 py-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
+                ⚡ Instant Results
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Pricing Section */}
-      <div className="bg-gray-50 dark:bg-dark-card py-16">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-12">
+      <div className="relative bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-blue-950/20 dark:to-purple-950/20 py-16 overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400/20 dark:bg-blue-500/10 rounded-full blur-3xl animate-blob"></div>
+          <div className="absolute top-40 right-20 w-96 h-96 bg-purple-400/20 dark:bg-purple-500/10 rounded-full blur-3xl animate-blob" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute bottom-20 left-1/3 w-80 h-80 bg-pink-400/20 dark:bg-pink-500/10 rounded-full blur-3xl animate-blob" style={{ animationDelay: '4s' }}></div>
+        </div>
+        
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 bg-grid-pattern opacity-30 dark:opacity-20"></div>
+        
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="text-center mb-12 scroll-reveal">
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               {t('packagesTitle')}
             </h2>
@@ -115,7 +158,7 @@ export default function Landing() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {subscriptionPlans.map((plan) => {
+            {subscriptionPlans.map((plan, index) => {
               const isStarter = plan.id === 'starter'
               const isPro = plan.id === 'pro'
               const isAgency = plan.id === 'agency'
@@ -123,11 +166,12 @@ export default function Landing() {
               return (
                 <div
                   key={plan.id}
-                  className={`relative bg-white dark:bg-dark-bg border-2 rounded-lg p-8 ${
+                  className={`relative bg-white dark:bg-dark-bg border-2 rounded-lg p-8 scroll-reveal ${
                     plan.popular
                       ? 'border-blue-500 shadow-xl scale-105'
                       : 'border-gray-200 dark:border-dark-border'
                   }`}
+                  style={{ transitionDelay: `${index * 0.1}s` }}
                 >
                   {plan.popular && (
                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
@@ -227,144 +271,12 @@ export default function Landing() {
             })}
           </div>
 
-          <div className="mt-12 max-w-4xl mx-auto bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+          <div className="mt-12 max-w-4xl mx-auto bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 scroll-reveal">
             <div className="flex items-start space-x-3">
               <Info className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
               <div className="text-sm text-gray-700 dark:text-gray-300">
                 <div className="font-semibold mb-2">{t('importantNote')}</div>
                 <div>{t('importantNoteText')}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Top-up Section */}
-      <div className="container mx-auto px-6 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            {t('topupTitle')}
-          </h2>
-          <div className="max-w-2xl mx-auto">
-            <div className="text-2xl mb-2">{t('topupSubtitle')}</div>
-            <p className="text-gray-600 dark:text-gray-400 text-lg">
-              {t('topupDescription')}
-            </p>
-          </div>
-        </div>
-
-        {loadingTopup ? (
-          <div className="text-center py-12">
-            <div className="text-gray-400">{t('loading')}</div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {topupPackages.map((pkg) => {
-              const isSmall = pkg.id === 'small'
-              const isMedium = pkg.id === 'medium'
-              const isLarge = pkg.id === 'large'
-
-              return (
-                <div
-                  key={pkg.id}
-                  className={`relative bg-white dark:bg-dark-bg border-2 rounded-lg p-8 ${
-                    pkg.popular
-                      ? 'border-blue-500 shadow-xl'
-                      : 'border-gray-200 dark:border-dark-border'
-                  }`}
-                >
-                  {pkg.popular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-semibold flex items-center space-x-1">
-                        <Star className="w-4 h-4" />
-                        <span>{t('mostPopular')}</span>
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="mb-6">
-                    <div className={`text-4xl mb-2 ${isSmall ? 'text-green-500' : isMedium ? 'text-blue-500' : 'text-purple-500'}`}>
-                      {isSmall ? '🟢' : isMedium ? '🔵' : '🟣'}
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                      {pkg.name}
-                    </h3>
-                    <div className="flex items-baseline space-x-1 mb-2">
-                      <span className="text-4xl font-bold text-gray-900 dark:text-white">
-                        {pkg.price}
-                      </span>
-                      <span className="text-gray-600 dark:text-gray-400">₼</span>
-                    </div>
-                    <div className="text-lg text-gray-600 dark:text-gray-400 mb-4">
-                      {pkg.total_credits.toLocaleString()} {t('credits')}
-                    </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                      {isSmall && t('topupSuitableSmall')}
-                      {isMedium && t('topupSuitableMedium')}
-                      {isLarge && t('topupSuitableLarge')}
-                    </div>
-                  </div>
-
-                  <div className="mb-6 space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                    {isSmall && (
-                      <>
-                        {t('topupSmallFeatures').split('\n').map((line, idx) => (
-                          <div key={idx}>{line}</div>
-                        ))}
-                        <div className="mt-4 italic">{t('topupSmallNote')}</div>
-                      </>
-                    )}
-                    {isMedium && (
-                      <>
-                        {t('topupMediumFeatures').split('\n').map((line, idx) => (
-                          <div key={idx}>{line}</div>
-                        ))}
-                        <div className="mt-4 italic">{t('topupMediumNote')}</div>
-                      </>
-                    )}
-                    {isLarge && (
-                      <>
-                        {t('topupLargeFeatures').split('\n').map((line, idx) => (
-                          <div key={idx}>{line}</div>
-                        ))}
-                        <div className="mt-4 italic">{t('topupLargeNote')}</div>
-                      </>
-                    )}
-                  </div>
-
-                  <button
-                    onClick={() => handleSelectTopup(pkg.id)}
-                    className={`w-full py-3 rounded-lg font-medium transition-colors ${
-                      pkg.popular
-                        ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                        : 'bg-gray-100 dark:bg-dark-hover hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white'
-                    }`}
-                  >
-                    {t('buyTopup')}
-                  </button>
-                </div>
-              )
-            })}
-          </div>
-        )}
-
-        <div className="mt-12 max-w-4xl mx-auto bg-gray-50 dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg p-6">
-          <div className="flex items-start space-x-3">
-            <Info className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
-            <div className="text-sm text-gray-700 dark:text-gray-300">
-              <div className="font-semibold mb-2">{t('topupInfoTitle')}</div>
-              <div className="space-y-2">
-                <div>
-                  <div className="font-medium mb-1">{t('topupWhatIs')}</div>
-                  <div>{t('topupWhatIsText')}</div>
-                </div>
-                <div>
-                  <div className="font-medium mb-1">{t('topupDifference')}</div>
-                  <div>{t('topupDifferenceText')}</div>
-                </div>
-                <div className="mt-3 text-xs italic">
-                  {t('topupTip')}
-                </div>
               </div>
             </div>
           </div>

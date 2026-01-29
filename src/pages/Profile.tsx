@@ -21,6 +21,7 @@ import { useLanguageStore, useTranslation } from '../store/languageStore'
 import { useThemeStore } from '../store/themeStore'
 import { authAPI } from '../services/api'
 import SEO from '../components/SEO'
+import ModernBackground from '../components/ModernBackground'
 
 export default function Profile() {
   const navigate = useNavigate()
@@ -110,9 +111,9 @@ export default function Profile() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-white dark:bg-dark-bg flex items-center justify-center">
+      <ModernBackground className="flex items-center justify-center">
         <div className="text-gray-600 dark:text-gray-400">Loading...</div>
-      </div>
+      </ModernBackground>
     )
   }
 
@@ -123,7 +124,7 @@ export default function Profile() {
   })
 
   return (
-    <div className="min-h-screen bg-white dark:bg-dark-bg">
+    <ModernBackground>
       <SEO 
         title="Profil"
         description="İstifadəçi profili və hesab ayarları"
@@ -426,6 +427,6 @@ export default function Profile() {
           </div>
         </div>
       </div>
-    </div>
+    </ModernBackground>
   )
 }

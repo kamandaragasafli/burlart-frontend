@@ -14,7 +14,8 @@ export default function SEO({
   title = 'Burlart - AI Video və Şəkil Yaratma Platforması',
   description = 'Burlart ilə saniyələr ərzində peşəkar AI video və şəkillər yaradın. Pika Labs, Sora, Kling AI, Flux və digər güclü AI modelləri ilə kreativliyinizi həyata keçirin.',
   keywords = 'AI video generator, AI şəkil yaratma, suni intellekt, video yaratma, şəkil generatoru, Pika Labs, Sora AI, Kling AI, Flux AI, Burlart',
-  image = 'https://timera.ai/og-image.jpg',
+  // Default social preview image – served from public folder
+  image = '/favicon.jpeg',
   url = 'https://timera.ai',
   type = 'website',
   structuredData,

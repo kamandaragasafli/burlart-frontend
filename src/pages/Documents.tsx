@@ -1,11 +1,12 @@
 import SEO from '../components/SEO'
 import { useTranslation } from '../store/languageStore'
+import ModernBackground from '../components/ModernBackground'
 
 export default function Documents() {
   const t = useTranslation()
 
   return (
-    <div className="min-h-screen bg-white dark:bg-dark-bg">
+    <ModernBackground>
       <SEO
         title="Legal & Documents - Burlart"
         description="Read Burlart legal documents: privacy policy, terms of use, cookie policy and refund policy."
@@ -68,7 +69,7 @@ export default function Documents() {
           </section>
         </div>
       </div>
-    </div>
+    </ModernBackground>
   )
 }
 

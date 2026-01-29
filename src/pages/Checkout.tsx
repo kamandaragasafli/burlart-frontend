@@ -37,32 +37,37 @@ export default function Checkout() {
     try {
       setProcessing(true)
 
-      // Mock E-point payment flow
-      // In production, this would redirect to E-point payment page
-      // For now, we'll simulate the payment process
-
       if (type === 'subscription' && planId) {
-        // Create subscription
-        await subscriptionAPI.createSubscription(planId, true)
+        // Create subscription and get payment URL
+        const result = await subscriptionAPI.createSubscription(planId, true)
         
-        // Mock: Simulate E-point redirect
-        // In production: window.location.href = result.payment_url
-        setTimeout(() => {
-          navigate(`/checkout/success?type=subscription&plan=${planId}&payment_id=mock_${Date.now()}`)
-        }, 2000)
+        // If payment_url is returned, redirect to E-point
+        if (result.payment_url) {
+          window.location.href = result.payment_url
+          return // Don't set processing to false, we're redirecting
+        }
+        
+        // If no payment_url, payment was already completed (from webhook)
+        // Redirect to success page
+        navigate(`/checkout/success?type=subscription&plan=${planId}&payment_id=${result.payment_id || 'completed'}`)
       } else if (type === 'topup' && packageId) {
-        // Create top-up
+        // Create top-up and get payment URL
         const result = await topupAPI.createTopup(packageId)
         
-        // Mock: Simulate E-point redirect
-        // In production: window.location.href = result.payment_url
-        setTimeout(() => {
-          navigate(`/checkout/success?type=topup&package=${packageId}&purchase_id=${result.id}&payment_id=mock_${Date.now()}`)
-        }, 2000)
+        // If payment_url is returned, redirect to E-point
+        if (result.payment_url) {
+          window.location.href = result.payment_url
+          return // Don't set processing to false, we're redirecting
+        }
+        
+        // If no payment_url, payment was already completed (from webhook)
+        // Redirect to success page
+        navigate(`/checkout/success?type=topup&package=${packageId}&purchase_id=${result.purchase_id}&payment_id=${result.payment_id || 'completed'}`)
       }
     } catch (error: any) {
       console.error('Payment error:', error)
-      navigate(`/checkout/cancel?error=${encodeURIComponent(error.response?.data?.detail || 'Payment failed')}`)
+      const errorMessage = error.response?.data?.error || error.response?.data?.detail || 'Payment failed'
+      navigate(`/checkout/cancel?error=${encodeURIComponent(errorMessage)}`)
     } finally {
       setProcessing(false)
     }

@@ -14,6 +14,7 @@ import CreditModal from '../components/CreditModal'
 import SEO from '../components/SEO'
 import StructuredData from '../components/StructuredData'
 import { AlertCircle, Zap, Search, X, Heart } from 'lucide-react'
+import ModernBackground from '../components/ModernBackground'
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -143,7 +144,7 @@ export default function Dashboard() {
   ]
 
   return (
-    <div className="min-h-screen bg-white dark:bg-dark-bg">
+    <ModernBackground>
       <SEO 
         title="Dashboard - AI Alətləri"
         description="AI video və şəkil yaratma alətlərinə daxil olun. Pika Labs, Sora, Kling AI, Flux və digər güclü modellər."
@@ -319,7 +320,7 @@ export default function Dashboard() {
       </div>
 
       <CreditModal isOpen={showCreditModal} onClose={() => setShowCreditModal(false)} />
-    </div>
+    </ModernBackground>
   )
 }
 
