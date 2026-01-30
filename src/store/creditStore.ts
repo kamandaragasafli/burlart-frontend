@@ -8,7 +8,7 @@ interface CreditStore {
 }
 
 export const useCreditStore = create<CreditStore>((set, get) => ({
-  credits: 500, // Initial credits for demo
+  credits: 0, // Initial credits (will be updated from API after login)
   addCredits: (amount) => set((state) => ({ credits: state.credits + amount })),
   deductCredits: (amount) =>
     set((state) => ({ credits: Math.max(0, state.credits - amount) })),
