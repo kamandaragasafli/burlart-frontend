@@ -42,6 +42,9 @@ export default function CheckoutSuccess() {
               success('Abunəlik uğurla aktivləşdirildi!')
             } else if (type === 'topup') {
               success('Kreditlər hesabınıza əlavə olundu!')
+            } else {
+              // If type is not specified, just refresh and show generic success
+              success('Ödəniş uğurla tamamlandı!')
             }
             setProcessing(false)
           }, 2000)

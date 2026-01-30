@@ -185,16 +185,16 @@ export default function Register() {
 
       {/* Right Side - Register Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12 bg-white dark:bg-dark-bg">
-        <div className="w-full max-w-md">
+      <div className="w-full max-w-md">
           {/* Logo and Title - Mobile */}
           <div className="lg:hidden text-center mb-8">
-            <div className="flex items-center justify-center space-x-2 mb-4">
+          <div className="flex items-center justify-center space-x-2 mb-4">
               <Sparkles className="w-8 h-8 text-blue-500" />
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
-                Burlart
-              </span>
-            </div>
+              Burlart
+            </span>
           </div>
+        </div>
 
           {/* Title */}
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
@@ -212,121 +212,121 @@ export default function Register() {
             {/* Google Login (only on main server) */}
             {showGoogleLogin && (
               <>
-                {!googleReady ? (
-                  <div className="w-full mb-6 flex items-center justify-center border border-gray-300 dark:border-dark-border rounded-lg py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    <span>Loading Google...</span>
-                  </div>
-                ) : (
-                  <div id="google-register-button" className="mb-6 flex justify-center"></div>
-                )}
+          {!googleReady ? (
+            <div className="w-full mb-6 flex items-center justify-center border border-gray-300 dark:border-dark-border rounded-lg py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
+              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              <span>Loading Google...</span>
+            </div>
+          ) : (
+            <div id="google-register-button" className="mb-6 flex justify-center"></div>
+          )}
 
-                {/* Divider */}
-                <div className="flex items-center mb-6">
-                  <div className="flex-1 h-px bg-gray-200 dark:bg-dark-border" />
-                  <span className="px-3 text-xs uppercase tracking-wide text-gray-400">
-                    or
-                  </span>
-                  <div className="flex-1 h-px bg-gray-200 dark:bg-dark-border" />
-                </div>
+          {/* Divider */}
+          <div className="flex items-center mb-6">
+            <div className="flex-1 h-px bg-gray-200 dark:bg-dark-border" />
+            <span className="px-3 text-xs uppercase tracking-wide text-gray-400">
+              or
+            </span>
+            <div className="flex-1 h-px bg-gray-200 dark:bg-dark-border" />
+          </div>
               </>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Error Message */}
-              {error && (
-                <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg p-4 text-sm">
-                  {error}
-                </div>
-              )}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg p-4 text-sm">
+                {error}
+              </div>
+            )}
 
-              {/* Email Field */}
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('email') || 'Email'}
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
+            {/* Email Field */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('email') || 'Email'}
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                     autoComplete="email"
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-hover text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder={t('enterEmail') || 'Enter your email'}
-                  />
-                </div>
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-hover text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder={t('enterEmail') || 'Enter your email'}
+                />
               </div>
+            </div>
 
-              {/* Password Field */}
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('password') || 'Password'}
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={6}
+            {/* Password Field */}
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('password') || 'Password'}
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
                     autoComplete="new-password"
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-hover text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder={t('enterPassword') || 'Enter your password'}
-                  />
-                </div>
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  {t('passwordMinLength') || 'Minimum 6 characters'}
-                </p>
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-hover text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder={t('enterPassword') || 'Enter your password'}
+                />
               </div>
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                {t('passwordMinLength') || 'Minimum 6 characters'}
+              </p>
+            </div>
 
-              {/* Confirm Password Field */}
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('confirmPassword') || 'Confirm Password'}
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="confirmPassword"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    minLength={6}
+            {/* Confirm Password Field */}
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('confirmPassword') || 'Confirm Password'}
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={6}
                     autoComplete="new-password"
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-hover text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder={t('confirmPassword') || 'Confirm your password'}
-                  />
-                </div>
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-hover text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder={t('confirmPassword') || 'Confirm your password'}
+                />
               </div>
+            </div>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={isLoading}
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
                 className="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-lg shadow-lg text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed font-semibold transition-all duration-300 transform hover:scale-[1.02]"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>{t('registering') || 'Registering...'}</span>
-                  </>
-                ) : (
-                  <span>{t('register') || 'Register'}</span>
-                )}
-              </button>
-            </form>
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>{t('registering') || 'Registering...'}</span>
+                </>
+              ) : (
+                <span>{t('register') || 'Register'}</span>
+              )}
+            </button>
+          </form>
           </div>
         </div>
       </div>
