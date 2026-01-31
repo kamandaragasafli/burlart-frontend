@@ -22,12 +22,11 @@ import { useThemeStore } from './store/themeStore'
 import { useAuthStore } from './store/authStore'
 import ToastContainer from './components/ToastContainer'
 import { useToastStore } from './store/toastStore'
-import { subscriptionAPI } from './services/api'
 
 function AppContent() {
   const location = useLocation()
   const { theme } = useThemeStore()
-  const { initializeAuth, isLoading, isAuthenticated } = useAuthStore()
+  const { initializeAuth, isLoading } = useAuthStore()
   const { toasts, removeToast } = useToastStore()
   const hideHeader = location.pathname === '/login' || location.pathname === '/register'
 

@@ -28,7 +28,6 @@ export default function CreditModal({ isOpen, onClose }: CreditModalProps) {
   const navigate = useNavigate()
   const [packages, setPackages] = useState<TopUpPackage[]>([])
   const [loading, setLoading] = useState(false)
-  const [purchasing, setPurchasing] = useState<string | null>(null)
   const [purchasedPackages, setPurchasedPackages] = useState<string[]>([])
 
   useEffect(() => {
@@ -145,18 +144,13 @@ export default function CreditModal({ isOpen, onClose }: CreditModalProps) {
                     {!isPurchased && (
                       <button
                         onClick={() => handlePurchase(pkg.id)}
-                        disabled={purchasing === pkg.id}
                         className={`w-full py-3 rounded-lg font-medium transition-colors ${
                           pkg.popular
                             ? 'bg-blue-500 hover:bg-blue-600 text-white'
                             : 'bg-dark-card hover:bg-gray-700 text-white border border-dark-border'
-                        } ${purchasing === pkg.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        }`}
                       >
-                        {purchasing === pkg.id ? (
-                          <Loader2 className="w-5 h-5 animate-spin inline" />
-                        ) : (
-                          'Al'
-                        )}
+                        Al
                       </button>
                     )}
                     {isPurchased && (
