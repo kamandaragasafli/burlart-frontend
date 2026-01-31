@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { X, Zap, Check } from 'lucide-react'
 import { useSubscriptionStore, SubscriptionPlan as PlanType } from '../store/subscriptionStore'
 import { subscriptionPlans } from '../data/subscriptionPlans'
-import { useCreditStore } from '../store/creditStore'
 import { subscriptionAPI } from '../services/api'
 import { useAuthStore } from '../store/authStore'
 

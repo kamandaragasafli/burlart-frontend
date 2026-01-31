@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import Header from './components/Header'
@@ -37,31 +37,7 @@ function AppContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Empty deps - only run once on mount
 
-  // Check subscription when user is authenticated
-  useEffect(() => {
-    const checkSubscription = async () => {
-      if (!isLoading) {
-        if (isAuthenticated) {
-          setIsCheckingSubscription(true)
-          try {
-            const subscriptionInfo = await subscriptionAPI.getInfo()
-            setHasSubscription(subscriptionInfo.has_subscription || false)
-          } catch (error) {
-            console.error('Error checking subscription:', error)
-            setHasSubscription(false)
-          } finally {
-            setIsCheckingSubscription(false)
-          }
-        } else {
-          // If not authenticated, don't check subscription
-          setIsCheckingSubscription(false)
-          setHasSubscription(false)
-        }
-      }
-    }
-
-    checkSubscription()
-  }, [isLoading, isAuthenticated])
+  // Subscription check is handled in individual components that need it
 
   useEffect(() => {
     // Apply theme class to document element
