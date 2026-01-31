@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuthStore } from '../store/authStore'
 import { useTranslation } from '../store/languageStore'
-import { videoAPI, imageAPI, subscriptionAPI } from '../services/api'
+import { videoAPI, imageAPI } from '../services/api'
 import SEO from '../components/SEO'
 import ModernBackground from '../components/ModernBackground'
 import { Download, Loader2, CheckCircle, XCircle, Clock, Video, Image as ImageIcon } from 'lucide-react'
@@ -26,7 +26,6 @@ export default function MyJobs() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [filter, setFilter] = useState<'all' | 'pending' | 'processing' | 'completed' | 'failed'>('all')
-  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null)
 
   const loadJobs = useCallback(async () => {
     if (!user) return
@@ -98,17 +97,6 @@ export default function MyJobs() {
   useEffect(() => {
     if (user) {
       loadJobs()
-      // Check subscription status
-      const checkSubscription = async () => {
-        try {
-          const subscriptionInfo = await subscriptionAPI.getInfo()
-          setHasSubscription(subscriptionInfo.has_subscription && subscriptionInfo.is_active)
-        } catch (error) {
-          console.error('Error checking subscription:', error)
-          setHasSubscription(false)
-        }
-      }
-      checkSubscription()
     } else {
       setJobs([])
       setLoading(false)

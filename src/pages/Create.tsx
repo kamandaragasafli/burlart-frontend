@@ -21,7 +21,6 @@ import {
   Music,
   Film,
   Crown,
-  Maximize2,
   Eye
 } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
@@ -466,7 +465,7 @@ export default function Create() {
                   src={referenceImage}
                   alt="Reference thumbnail"
                   className="w-full h-full object-cover"
-                  onError={(e) => {
+                  onError={() => {
                     console.error('Error loading image:', referenceImage)
                     showError('Şəkil yüklənə bilmədi. Zəhmət olmasa yenidən cəhd edin.')
                     setReferenceImage(null)

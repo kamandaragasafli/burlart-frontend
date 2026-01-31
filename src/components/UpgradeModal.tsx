@@ -13,8 +13,7 @@ interface UpgradeModalProps {
 }
 
 export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
-  const { subscription, setSubscription } = useSubscriptionStore()
-  const { addCredits } = useCreditStore()
+  const { subscription } = useSubscriptionStore()
   const { user } = useAuthStore()
   const navigate = useNavigate()
   const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null)

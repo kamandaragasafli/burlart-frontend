@@ -23,12 +23,11 @@ interface TopUpPackage {
 }
 
 export default function CreditModal({ isOpen, onClose }: CreditModalProps) {
-  const { user, updateCredits } = useAuthStore()
-  const { success, error: showError } = useToastStore()
+  const { user } = useAuthStore()
+  const { error: showError } = useToastStore()
   const navigate = useNavigate()
   const [packages, setPackages] = useState<TopUpPackage[]>([])
   const [loading, setLoading] = useState(false)
-  const [purchasing, setPurchasing] = useState<string | null>(null)
   const [purchasedPackages, setPurchasedPackages] = useState<string[]>([])
 
   useEffect(() => {

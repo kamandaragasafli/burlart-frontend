@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import Header from './components/Header'
 import Home from './pages/Home'
@@ -27,11 +27,9 @@ import { subscriptionAPI } from './services/api'
 function AppContent() {
   const location = useLocation()
   const { theme } = useThemeStore()
-  const { initializeAuth, isLoading, isAuthenticated, user } = useAuthStore()
+  const { initializeAuth, isLoading, isAuthenticated } = useAuthStore()
   const { toasts, removeToast } = useToastStore()
   const hideHeader = location.pathname === '/login' || location.pathname === '/register'
-  const [isCheckingSubscription, setIsCheckingSubscription] = useState(false)
-  const [hasSubscription, setHasSubscription] = useState(false)
 
   // Initialize auth on app start - only once
   useEffect(() => {

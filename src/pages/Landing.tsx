@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Check, Zap, Sparkles, Info, ArrowRight, Star } from 'lucide-react'
+import { Check, Zap, Info, ArrowRight, Star } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 import { useTranslation } from '../store/languageStore'
 import { useThemeStore } from '../store/themeStore'
