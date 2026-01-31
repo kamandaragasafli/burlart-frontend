@@ -53,7 +53,16 @@ export default function CheckoutSuccess() {
 
         if (type === 'subscription' && planId && paymentId) {
           // Subscription payment completed
-          await subscriptionAPI.getInfo() // Refresh subscription info
+          // Wait a bit for webhook to process and update credits
+          await new Promise(resolve => setTimeout(resolve, 1000))
+          // Refresh subscription info
+          await subscriptionAPI.getInfo()
+          // Refresh profile to get updated credits
+          await fetchProfile()
+          // Double check - refresh again after a short delay
+          setTimeout(async () => {
+            await fetchProfile()
+          }, 2000)
           success('Abunəlik uğurla aktivləşdirildi!')
         } else if (type === 'topup' && purchaseId && paymentId) {
           // Top-up payment completed

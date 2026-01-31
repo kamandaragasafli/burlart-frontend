@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import Header from './components/Header'
 import Home from './pages/Home'
@@ -22,19 +22,48 @@ import { useThemeStore } from './store/themeStore'
 import { useAuthStore } from './store/authStore'
 import ToastContainer from './components/ToastContainer'
 import { useToastStore } from './store/toastStore'
+import { subscriptionAPI } from './services/api'
 
 function AppContent() {
   const location = useLocation()
   const { theme } = useThemeStore()
-  const { initializeAuth, isLoading } = useAuthStore()
+  const { initializeAuth, isLoading, isAuthenticated, user } = useAuthStore()
   const { toasts, removeToast } = useToastStore()
   const hideHeader = location.pathname === '/login' || location.pathname === '/register'
+  const [isCheckingSubscription, setIsCheckingSubscription] = useState(false)
+  const [hasSubscription, setHasSubscription] = useState(false)
 
   // Initialize auth on app start - only once
   useEffect(() => {
     initializeAuth()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Empty deps - only run once on mount
+
+  // Check subscription when user is authenticated
+  useEffect(() => {
+    const checkSubscription = async () => {
+      if (!isLoading) {
+        if (isAuthenticated) {
+          setIsCheckingSubscription(true)
+          try {
+            const subscriptionInfo = await subscriptionAPI.getInfo()
+            setHasSubscription(subscriptionInfo.has_subscription || false)
+          } catch (error) {
+            console.error('Error checking subscription:', error)
+            setHasSubscription(false)
+          } finally {
+            setIsCheckingSubscription(false)
+          }
+        } else {
+          // If not authenticated, don't check subscription
+          setIsCheckingSubscription(false)
+          setHasSubscription(false)
+        }
+      }
+    }
+
+    checkSubscription()
+  }, [isLoading, isAuthenticated])
 
   useEffect(() => {
     // Apply theme class to document element

@@ -28,7 +28,14 @@ export default function Register() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard')
+      // Check if there's a redirect parameter
+      const urlParams = new URLSearchParams(window.location.search)
+      const redirect = urlParams.get('redirect')
+      if (redirect) {
+        navigate(redirect)
+      } else {
+        navigate('/landing')
+      }
     }
   }, [isAuthenticated, navigate])
 
@@ -47,7 +54,14 @@ export default function Register() {
             }
             try {
               await loginWithGoogle(response.credential)
-              navigate('/dashboard')
+              // Check if there's a redirect parameter
+              const urlParams = new URLSearchParams(window.location.search)
+              const redirect = urlParams.get('redirect')
+              if (redirect) {
+                navigate(redirect)
+              } else {
+                navigate('/landing')
+              }
             } catch (err: any) {
               console.error('Google register/login error:', err)
               const msg =
@@ -104,7 +118,14 @@ export default function Register() {
 
     try {
       await register(email, password)
-      navigate('/dashboard')
+      // Check if there's a redirect parameter
+      const urlParams = new URLSearchParams(window.location.search)
+      const redirect = urlParams.get('redirect')
+      if (redirect) {
+        navigate(redirect)
+      } else {
+        navigate('/landing')
+      }
     } catch (err: any) {
       console.error('Register error:', err)
       let errorMessage = err.response?.data?.error || err.response?.data?.detail || err.message || t('registrationFailed') || 'Registration failed. Please try again.'

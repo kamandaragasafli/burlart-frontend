@@ -137,7 +137,7 @@ export default function Dashboard() {
     icon?: typeof Heart
   }> = [
     { id: 'all', name: t('allTools') },
-    { id: 'my', name: 'My' },
+    { id: 'my', name: t('myTools') },
     { id: 'video', name: t('video') },
     { id: 'image', name: t('image') },
     { id: 'audio', name: t('audio') },
@@ -199,7 +199,7 @@ export default function Dashboard() {
                 {availableCredits === 0 && (
                   <div className="flex items-center space-x-2 text-sm text-red-600 dark:text-red-400 mt-2">
                     <AlertCircle className="w-4 h-4" />
-                    <span>Kreditləriniz bitib. Top-up alın ki, AI alətlərindən istifadə edə biləsiniz.</span>
+                    <span>{t('creditsExhausted')}</span>
                   </div>
                 )}
                 {heldCredits > 0 && availableCredits > 0 && (
@@ -252,7 +252,7 @@ export default function Dashboard() {
                       <button
                         onClick={() => setSearchQuery('')}
                         className="absolute right-10 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                        title="Clear search"
+                        title={t('clearSearch')}
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -263,7 +263,7 @@ export default function Dashboard() {
                         setShowSearch(false)
                       }}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                      title="Close search"
+                      title={t('closeSearch')}
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -289,7 +289,7 @@ export default function Dashboard() {
                         : 'bg-gray-100 dark:bg-dark-card text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-hover'
                     } ${isMyCategory && myToolsCount === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                     disabled={isMyCategory && myToolsCount === 0}
-                    title={isMyCategory && myToolsCount === 0 ? 'No favorite or recently used tools yet' : ''}
+                    title={isMyCategory && myToolsCount === 0 ? t('noFavoriteToolsYet') : ''}
                   >
                     {Icon && <Icon className="w-4 h-4" />}
                     <span>{category.name}</span>

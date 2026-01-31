@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import { useTranslation } from '../store/languageStore'
 import { subscriptionAPI, topupAPI } from '../services/api'
@@ -26,7 +27,8 @@ interface Invoice {
 }
 
 export default function Billing() {
-  const { user } = useAuthStore()
+  const navigate = useNavigate()
+  const { user, updateCredits } = useAuthStore()
   const t = useTranslation()
   const { success, error } = useToastStore()
   const [subscription, setSubscription] = useState<Subscription | null>(null)
@@ -112,9 +114,15 @@ export default function Billing() {
     try {
       setCancelling(true)
       await subscriptionAPI.cancelSubscription()
-      success('Abunəlik uğurla ləğv edildi')
+      // Update user credits to 0 in store
+      updateCredits(0)
+      success('Abunəlik uğurla ləğv edildi. Kreditlər sıfırlandı.')
       await loadBillingData() // Reload data
       setShowCancelConfirm(false)
+      // Redirect to landing page
+      setTimeout(() => {
+        navigate('/landing')
+      }, 1500)
     } catch (err: any) {
       error(err.response?.data?.error || 'Abunəliyi ləğv etmək mümkün olmadı')
     } finally {

@@ -19,7 +19,7 @@ import {
 import { useAuthStore } from '../store/authStore'
 import { useLanguageStore, useTranslation } from '../store/languageStore'
 import { useThemeStore } from '../store/themeStore'
-import { authAPI } from '../services/api'
+import { authAPI, videoAPI, imageAPI } from '../services/api'
 import SEO from '../components/SEO'
 import ModernBackground from '../components/ModernBackground'
 
@@ -39,6 +39,8 @@ export default function Profile() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   
   // Stats
   const [stats, setStats] = useState({
@@ -50,15 +52,44 @@ export default function Profile() {
   useEffect(() => {
     if (user) {
       setEditedEmail(user.email)
-      // Load stats (placeholder - bu API endpoint'lerini backend'de eklemen gerekecek)
-      // Şimdilik dummy data
-      setStats({
-        totalVideos: 12,
-        totalImages: 45,
-        totalCreditsUsed: 1250,
-      })
+      loadStats()
     }
   }, [user])
+
+  const loadStats = async () => {
+    if (!user) return
+
+    try {
+      // Load videos and images
+      const [videosResponse, imagesResponse] = await Promise.all([
+        videoAPI.getVideos().catch(() => []),
+        imageAPI.getImages().catch(() => []),
+      ])
+
+      // Handle different response structures
+      const videos = Array.isArray(videosResponse) 
+        ? videosResponse 
+        : (videosResponse?.results || videosResponse?.data || [])
+      
+      const images = Array.isArray(imagesResponse) 
+        ? imagesResponse 
+        : (imagesResponse?.results || imagesResponse?.data || [])
+
+      // Calculate total credits used
+      const totalCreditsUsed = 
+        videos.reduce((sum: number, v: any) => sum + (v.credits_used || v.credits || 0), 0) +
+        images.reduce((sum: number, i: any) => sum + (i.credits_used || i.credits || 0), 0)
+
+      setStats({
+        totalVideos: videos.length,
+        totalImages: images.length,
+        totalCreditsUsed,
+      })
+    } catch (error) {
+      console.error('Failed to load stats:', error)
+      // Keep default values (0) on error
+    }
+  }
 
   const handleSaveProfile = async () => {
     try {
@@ -365,9 +396,53 @@ export default function Profile() {
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                 Once you delete your account, there is no going back. Please be certain.
               </p>
-              <button className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-sm">
+              {!showDeleteConfirm ? (
+                <button 
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-sm"
+                >
                 Delete Account
               </button>
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-sm text-red-600 dark:text-red-400 font-medium">
+                    Bu əməliyyat geri qaytarıla bilməz. Hesabınızı silmək istədiyinizə əminsiniz?
+                  </p>
+                  <div className="flex items-center space-x-3">
+                    <button
+                      onClick={async () => {
+                        try {
+                          setIsDeleting(true)
+                          setError('')
+                          await authAPI.deleteAccount()
+                          // Clear local storage and redirect to home
+                          localStorage.removeItem('access_token')
+                          localStorage.removeItem('refresh_token')
+                          window.location.href = '/'
+                        } catch (err: any) {
+                          console.error('Delete account error:', err)
+                          setError(err.response?.data?.error || 'Hesab silinərkən xəta baş verdi.')
+                          setIsDeleting(false)
+                        }
+                      }}
+                      disabled={isDeleting}
+                      className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isDeleting ? 'Silinir...' : 'Bəli, Sil'}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowDeleteConfirm(false)
+                        setError('')
+                      }}
+                      disabled={isDeleting}
+                      className="px-4 py-2 bg-gray-200 dark:bg-dark-hover hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg transition-colors text-sm disabled:opacity-50"
+                    >
+                      Ləğv et
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

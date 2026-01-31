@@ -1,4 +1,4 @@
-import { Video, Sparkles, FileText, ScrollText, Image, Music, Lock } from 'lucide-react'
+import { Video, Sparkles, FileText, ScrollText, Image, Music, Lock, ImagePlus, Film, Zap, Crown } from 'lucide-react'
 import { AITool } from '../types'
 import { useCreditStore } from '../store/creditStore'
 
@@ -14,11 +14,18 @@ const iconMap: Record<string, any> = {
   ScrollText,
   Image,
   Music,
+  ImagePlus,
+  Film,
+  Zap,
+  Crown,
 }
 
 export default function ToolCard({ tool, onUse }: ToolCardProps) {
   const { hasEnoughCredits } = useCreditStore()
-  const Icon = iconMap[tool.icon] || Video
+  // For image-to-video models, use ImagePlus icon, otherwise use the tool's icon
+  const Icon = tool.requiresImage 
+    ? ImagePlus 
+    : (iconMap[tool.icon] || Video)
   const canUse = tool.enabled && hasEnoughCredits(tool.creditCost)
 
   // Define gradient colors based on category
@@ -28,13 +35,22 @@ export default function ToolCard({ tool, onUse }: ToolCardProps) {
     audio: 'from-orange-500 to-red-500',
   }
   
-  const gradientClass = categoryColors[tool.category as keyof typeof categoryColors] || 'from-blue-500 to-purple-500'
+  // Special color for image-to-video models
+  const imageToVideoGradient = 'from-emerald-500 to-teal-500'
+  
+  const gradientClass = tool.requiresImage 
+    ? imageToVideoGradient 
+    : (categoryColors[tool.category as keyof typeof categoryColors] || 'from-blue-500 to-purple-500')
 
   return (
     <div
-      className={`group relative bg-white dark:bg-dark-card rounded-xl border-2 p-6 transition-all duration-300 overflow-hidden ${
+      className={`group relative ${tool.requiresImage 
+        ? 'bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20' 
+        : 'bg-white dark:bg-dark-card'} rounded-xl border-2 p-6 transition-all duration-300 overflow-hidden ${
         tool.enabled
-          ? 'border-gray-200 dark:border-dark-border hover:border-blue-400 dark:hover:border-blue-500 cursor-pointer shadow-lg hover:shadow-2xl hover:scale-[1.02] hover:-translate-y-1'
+          ? tool.requiresImage
+            ? 'border-emerald-200 dark:border-emerald-800 hover:border-emerald-400 dark:hover:border-emerald-500 cursor-pointer shadow-lg hover:shadow-2xl hover:scale-[1.02] hover:-translate-y-1'
+            : 'border-gray-200 dark:border-dark-border hover:border-blue-400 dark:hover:border-blue-500 cursor-pointer shadow-lg hover:shadow-2xl hover:scale-[1.02] hover:-translate-y-1'
           : 'border-gray-200 dark:border-dark-border opacity-60 cursor-not-allowed'
       }`}
       onClick={() => canUse && onUse(tool)}
@@ -68,15 +84,10 @@ export default function ToolCard({ tool, onUse }: ToolCardProps) {
               {tool.name}
             </h3>
             <span className={`inline-block px-2.5 py-1 text-xs font-semibold text-white bg-gradient-to-r ${gradientClass} rounded-full uppercase tracking-wide shadow-sm`}>
-              {tool.category}
+              {tool.requiresImage ? 'IMAGE-TO-VIDEO' : tool.category.toUpperCase()}
             </span>
           </div>
         </div>
-
-        {/* Description */}
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 flex-grow leading-relaxed">
-          {tool.description}
-        </p>
 
         {/* Action Button */}
         {canUse && (

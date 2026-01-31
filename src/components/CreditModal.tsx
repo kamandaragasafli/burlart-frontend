@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { X, Loader2 } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 import { useToastStore } from '../store/toastStore'
@@ -24,15 +25,32 @@ interface TopUpPackage {
 export default function CreditModal({ isOpen, onClose }: CreditModalProps) {
   const { user, updateCredits } = useAuthStore()
   const { success, error: showError } = useToastStore()
+  const navigate = useNavigate()
   const [packages, setPackages] = useState<TopUpPackage[]>([])
   const [loading, setLoading] = useState(false)
   const [purchasing, setPurchasing] = useState<string | null>(null)
+  const [purchasedPackages, setPurchasedPackages] = useState<string[]>([])
 
   useEffect(() => {
     if (isOpen) {
       loadPackages()
+      loadPurchaseHistory()
     }
   }, [isOpen])
+
+  const loadPurchaseHistory = async () => {
+    if (!user) return
+    try {
+      const history = await topupAPI.getHistory()
+      // Get list of purchased package IDs
+      const purchasedIds = history
+        .filter((item: any) => item.status === 'completed')
+        .map((item: any) => item.package)
+      setPurchasedPackages(purchasedIds)
+    } catch (error) {
+      console.error('Failed to load purchase history:', error)
+    }
+  }
 
   const loadPackages = async () => {
     try {
@@ -49,54 +67,20 @@ export default function CreditModal({ isOpen, onClose }: CreditModalProps) {
 
   if (!isOpen) return null
 
-  const handlePurchase = async (packageId: string) => {
+  const handlePurchase = (packageId: string) => {
     if (!user) {
       alert('Please login first')
       return
     }
 
-    setPurchasing(packageId)
-    try {
-      // In production, integrate with payment processor here
-      // For now, we'll create the purchase and auto-complete it
-      const result = await topupAPI.createTopup(packageId, `mock_payment_${Date.now()}`)
-      
-      // Update user credits in store
-      if (result.user_credits !== undefined) {
-        updateCredits(result.user_credits)
-      } else if (result.user?.credits !== undefined) {
-        updateCredits(result.user.credits)
-      }
-      
-      const pkg = packages.find(p => p.id === packageId)
-      const creditsAdded = pkg?.total_credits || result.total_credits || result.credits_purchased || result.credits || 0
-      success(`${creditsAdded} kredit uğurla əlavə olundu!`)
-      onClose()
-    } catch (error: any) {
-      console.error('Purchase failed:', error)
-      
-      // More detailed error messages
-      let errorMessage = 'Ödəniş uğursuz oldu. Yenidən cəhd edin.'
-      
-      if (error.response?.data) {
-        const errorData = error.response.data
-        if (errorData.error) {
-          errorMessage = errorData.error
-        } else if (errorData.detail) {
-          errorMessage = errorData.detail
-        } else if (typeof errorData === 'string') {
-          errorMessage = errorData
-        } else if (errorData.message) {
-          errorMessage = errorData.message
-        }
-      } else if (error.message) {
-        errorMessage = error.message
-      }
-      
-      showError(errorMessage)
-    } finally {
-      setPurchasing(null)
+    // Don't allow purchasing the same package again
+    if (purchasedPackages.includes(packageId)) {
+      return
     }
+
+    // Navigate to checkout page for payment
+    navigate(`/checkout?type=topup&package=${packageId}`)
+    onClose()
   }
 
   return (
@@ -123,40 +107,69 @@ export default function CreditModal({ isOpen, onClose }: CreditModalProps) {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {packages.map((pkg) => (
-                <button
-                  key={pkg.id}
-                  onClick={() => handlePurchase(pkg.id)}
-                  disabled={purchasing === pkg.id}
-                  className={`relative p-6 rounded-lg border-2 transition-all text-left ${
-                    pkg.popular
-                      ? 'border-blue-500 bg-dark-hover'
-                      : 'border-dark-border hover:border-gray-500'
-                  } ${purchasing === pkg.id ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  {pkg.popular && (
-                    <span className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
-                      Most Popular
-                    </span>
-                  )}
-                  <div className="mb-2">
-                    <div className="text-2xl font-bold text-white">
-                      {purchasing === pkg.id ? (
-                        <Loader2 className="w-6 h-6 animate-spin inline" />
-                      ) : (
-                        `${pkg.currency}${pkg.price}`
-                      )}
+              {packages.map((pkg) => {
+                const isPurchased = purchasedPackages.includes(pkg.id)
+                return (
+                  <div
+                    key={pkg.id}
+                    className={`relative p-6 rounded-lg border-2 transition-all ${
+                      isPurchased ? 'opacity-75 cursor-not-allowed' : ''
+                    } ${
+                      pkg.popular
+                        ? 'border-blue-500 bg-dark-hover'
+                        : 'border-dark-border hover:border-gray-500'
+                    }`}
+                  >
+                    {pkg.popular && (
+                      <span className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
+                        Most Popular
+                      </span>
+                    )}
+                    {isPurchased && (
+                      <span className="absolute top-4 right-4 bg-green-500 text-white text-xs px-3 py-1 rounded-full">
+                        Alınmış
+                      </span>
+                    )}
+                    <div className="mb-4">
+                      <div className="text-2xl font-bold text-white">
+                        {pkg.currency}{pkg.price}
+                      </div>
+                      <div className="text-sm text-gray-400 mt-1">
+                        {pkg.credits} credits
+                        {pkg.bonus_credits > 0 && (
+                          <span className="text-green-400 ml-1">+{pkg.bonus_credits} bonus</span>
+                        )}
+                        <span className="text-gray-500 ml-1">({pkg.total_credits} total)</span>
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-400 mt-1">
-                      {pkg.credits} credits
-                      {pkg.bonus_credits > 0 && (
-                        <span className="text-green-400 ml-1">+{pkg.bonus_credits} bonus</span>
-                      )}
-                      <span className="text-gray-500 ml-1">({pkg.total_credits} total)</span>
-                    </div>
+                    {!isPurchased && (
+                      <button
+                        onClick={() => handlePurchase(pkg.id)}
+                        disabled={purchasing === pkg.id}
+                        className={`w-full py-3 rounded-lg font-medium transition-colors ${
+                          pkg.popular
+                            ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                            : 'bg-dark-card hover:bg-gray-700 text-white border border-dark-border'
+                        } ${purchasing === pkg.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        {purchasing === pkg.id ? (
+                          <Loader2 className="w-5 h-5 animate-spin inline" />
+                        ) : (
+                          'Al'
+                        )}
+                      </button>
+                    )}
+                    {isPurchased && (
+                      <button
+                        disabled
+                        className="w-full py-3 rounded-lg font-medium bg-dark-card text-gray-500 cursor-not-allowed border border-dark-border"
+                      >
+                        Alınmış Paket
+                      </button>
+                    )}
                   </div>
-                </button>
-              ))}
+                )
+              })}
             </div>
           )}
 

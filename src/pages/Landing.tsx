@@ -5,16 +5,36 @@ import { useAuthStore } from '../store/authStore'
 import { useTranslation } from '../store/languageStore'
 import { useThemeStore } from '../store/themeStore'
 import { subscriptionPlans } from '../data/subscriptionPlans'
+import { subscriptionAPI } from '../services/api'
 import SEO from '../components/SEO'
 import StructuredData from '../components/StructuredData'
 import CreditModal from '../components/CreditModal'
 
 export default function Landing() {
   const navigate = useNavigate()
-  const { user } = useAuthStore()
+  const { user, isAuthenticated } = useAuthStore()
   const { theme } = useThemeStore()
   const t = useTranslation()
   const [showCreditModal, setShowCreditModal] = useState(false)
+
+  // Check subscription and redirect if user has subscription
+  useEffect(() => {
+    const checkSubscription = async () => {
+      if (isAuthenticated) {
+        try {
+          const subscriptionInfo = await subscriptionAPI.getInfo()
+          if (subscriptionInfo.has_subscription) {
+            // If user has subscription, redirect to dashboard
+            navigate('/dashboard')
+          }
+        } catch (error) {
+          console.error('Error checking subscription:', error)
+        }
+      }
+    }
+
+    checkSubscription()
+  }, [isAuthenticated, navigate])
 
   // Scroll reveal animation
   useEffect(() => {
@@ -87,10 +107,14 @@ export default function Landing() {
         <div className="container mx-auto px-6 py-24 relative z-10">
           <div className="max-w-5xl mx-auto text-center">
             <div className="mb-12 space-y-8">
-              {/* Animated Icon */}
+              {/* Logo */}
               <div className="relative inline-block">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur-2xl opacity-40 animate-pulse"></div>
-                <Sparkles className="w-20 h-20 text-blue-500 dark:text-blue-400 mx-auto relative z-10" />
+                <img 
+                  src="/favicon.jpeg" 
+                  alt="Burlart Logo" 
+                  className="w-20 h-20 mx-auto relative z-10 object-contain"
+                />
               </div>
 
               {/* Main Heading with Gradient */}

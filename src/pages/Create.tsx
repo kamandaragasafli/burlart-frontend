@@ -12,11 +12,23 @@ import {
   Zap,
   Search,
   X,
-  Download
+  Download,
+  ImagePlus,
+  Video as VideoLucide,
+  Sparkles,
+  FileText,
+  ScrollText,
+  Music,
+  Film,
+  Crown,
+  Maximize2,
+  Eye
 } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
-import { videoAPI, imageAPI } from '../services/api'
+import { videoAPI, imageAPI, subscriptionAPI } from '../services/api'
 import { aiTools } from '../data/tools'
+import { templates } from '../data/templates'
+import { AITool } from '../types'
 import { useTranslation } from '../store/languageStore'
 import { useToastStore } from '../store/toastStore'
 import SEO from '../components/SEO'
@@ -47,6 +59,7 @@ export default function Create() {
   const [showPromptMenu, setShowPromptMenu] = useState(false)
   const [showPromptLibrary, setShowPromptLibrary] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [selectedTemplatePreview, setSelectedTemplatePreview] = useState<typeof templates[0] | null>(null)
   const [generatedVideo, setGeneratedVideo] = useState<string | null>(null)
   const [generatedImage, setGeneratedImage] = useState<string | null>(null)
   const [referenceImage, setReferenceImage] = useState<string | null>(null)
@@ -64,11 +77,23 @@ export default function Create() {
   
   const { user, updateCredits, fetchProfile } = useAuthStore()
   const [showCreditModal, setShowCreditModal] = useState(false)
+  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null)
   const t = useTranslation()
   const { success, info, error: showError } = useToastStore()
 
-  // Get available tools based on content type
-  const availableTools = aiTools.filter(tool => tool.category === contentType && tool.enabled)
+  // Get available tools based on content type and reference image
+  const availableTools = aiTools.filter(tool => {
+    if (tool.category !== contentType || !tool.enabled) return false
+    
+    // For video category, show both text-to-video and image-to-video models
+    // Image-to-video models will be available when user has a reference image
+    if (contentType === 'video') {
+      // Show all video models (both text-to-video and image-to-video)
+      return true
+    }
+    
+    return true
+  })
   const selectedToolData = availableTools.find(tool => tool.id === selectedTool) || availableTools[0]
   
   // Set tool from URL when component mounts or URL changes
@@ -86,11 +111,30 @@ export default function Create() {
   }, [toolFromUrl])
 
   // Set default tool when content type changes or if current selection is invalid
+  // Also reselect tool when reference image is added/removed
   useEffect(() => {
     if (availableTools.length > 0 && (!selectedTool || !availableTools.find(t => t.id === selectedTool))) {
       setSelectedTool(availableTools[0].id)
     }
-  }, [contentType, availableTools, selectedTool])
+  }, [contentType, availableTools, selectedTool, referenceImage])
+
+  // Check subscription status
+  useEffect(() => {
+    const checkSubscription = async () => {
+      if (!user) {
+        setHasSubscription(false)
+        return
+      }
+      try {
+        const subscriptionInfo = await subscriptionAPI.getInfo()
+        setHasSubscription(subscriptionInfo.has_subscription && subscriptionInfo.is_active)
+      } catch (error) {
+        console.error('Error checking subscription:', error)
+        setHasSubscription(false)
+      }
+    }
+    checkSubscription()
+  }, [user])
 
   // Generate random seed
   const generateRandomSeed = () => {
@@ -113,12 +157,82 @@ export default function Create() {
 
   const handleImageSelected: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const file = e.target.files?.[0]
-    if (!file) return
+    if (!file) {
+      console.log('No file selected')
+      return
+    }
 
-    const url = URL.createObjectURL(file)
-    setReferenceImage(url)
-    // Switch to image mode by default when user uploads an image
-    setContentType('image')
+    console.log('File selected:', file.name, file.type, file.size)
+
+    // Validate file type - check both MIME type and file extension
+    const validImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/bmp', 'image/svg+xml']
+    const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg']
+    const fileName = file.name.toLowerCase()
+    const fileExtension = fileName.includes('.') ? '.' + fileName.split('.').pop() : ''
+
+    // Check if file type is valid (MIME type or extension)
+    const hasValidMimeType = file.type && (validImageTypes.includes(file.type.toLowerCase()) || file.type.startsWith('image/'))
+    const hasValidExtension = fileExtension && validExtensions.includes(fileExtension)
+
+    // If neither MIME type nor extension is valid, reject the file
+    if (!hasValidMimeType && !hasValidExtension) {
+      console.error('Invalid file type:', {
+        name: file.name,
+        type: file.type,
+        extension: fileExtension,
+        size: file.size
+      })
+      showError(`Yalnız şəkil faylları yükləyə bilərsiniz. (JPG, PNG, GIF, WEBP, BMP, SVG)\nFayl: ${file.name}\nTip: ${file.type || 'məlum deyil'}`)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+      return
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      showError('Şəkil ölçüsü 10MB-dan böyük ola bilməz.')
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+      return
+    }
+
+    try {
+      // Create object URL for preview
+      const url = URL.createObjectURL(file)
+      console.log('Created object URL:', url)
+      setReferenceImage(url)
+      
+      // Only auto-switch to video mode if we're not already in image mode
+      // If in image mode, stay in image mode (for image editing models)
+      if (contentType !== 'image') {
+        // Auto-switch to video mode (image-to-video) when user uploads an image
+        setContentType('video')
+        
+        // Auto-select an image-to-video model if available
+        const imageToVideoTools = aiTools.filter(tool => tool.category === 'video' && tool.requiresImage && tool.enabled)
+        if (imageToVideoTools.length > 0) {
+          // Select the first available image-to-video tool
+          setSelectedTool(imageToVideoTools[0].id)
+        }
+      } else {
+        // We're in image mode, auto-select an image editing model if available
+        const imageEditTools = aiTools.filter(tool => tool.category === 'image' && tool.requiresImage && tool.enabled)
+        if (imageEditTools.length > 0) {
+          // Select the first available image editing tool
+          setSelectedTool(imageEditTools[0].id)
+        }
+      }
+      
+      success('Şəkil uğurla yükləndi!')
+    } catch (error) {
+      console.error('Error creating object URL:', error)
+      showError('Şəkil yüklənərkən xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.')
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
   }
 
   // Prompt helper actions (Sliders menu)
@@ -146,9 +260,18 @@ export default function Create() {
       alert(t('enterPrompt') || 'Please enter a prompt')
       return
     }
-    
+
     if (!user) {
       alert(t('loginRequired') || 'Please login first')
+      return
+    }
+
+    // Check if user has active subscription
+    if (hasSubscription === false) {
+      showError('Abunəlik tələb olunur. Zəhmət olmasa paket seçin.')
+      setTimeout(() => {
+        window.location.href = '/landing'
+      }, 2000)
       return
     }
 
@@ -268,6 +391,46 @@ export default function Create() {
     return parts.join(' · ')
   }
 
+  // Get icon for tool
+  const getToolIcon = (tool: typeof selectedToolData) => {
+    if (!tool) return Zap
+    // Image-to-video models use ImagePlus icon
+    if (tool.requiresImage) return ImagePlus
+    
+    const iconMap: Record<string, any> = {
+      Video: VideoLucide,
+      Sparkles,
+      FileText,
+      ScrollText,
+      Image: ImageIcon,
+      Music,
+      Film,
+      Zap,
+      Crown,
+    }
+    
+    return iconMap[tool.icon] || Zap
+  }
+
+  // Get icon for tool in dropdown list
+  const getToolIconForList = (tool: AITool) => {
+    if (tool.requiresImage) return ImagePlus
+    
+    const iconMap: Record<string, any> = {
+      Video: VideoLucide,
+      Sparkles,
+      FileText,
+      ScrollText,
+      Image: ImageIcon,
+      Music,
+      Film,
+      Zap,
+      Crown,
+    }
+    
+    return iconMap[tool.icon] || Zap
+  }
+
   return (
     <ModernBackground className="flex flex-col">
       <SEO 
@@ -298,15 +461,26 @@ export default function Create() {
             
             {/* Reference image preview inside textarea */}
             {referenceImage && (
-              <div className="absolute top-20 left-6 w-16 h-16 rounded-md border border-gray-200 dark:border-dark-border overflow-hidden bg-gray-100 dark:bg-dark-hover shadow-sm group">
+              <div className="absolute top-6 left-6 w-20 h-20 rounded-md border-2 border-blue-400 dark:border-blue-500 overflow-hidden bg-gray-100 dark:bg-dark-hover shadow-lg group z-10">
                 <img
                   src={referenceImage}
                   alt="Reference thumbnail"
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    console.error('Error loading image:', referenceImage)
+                    showError('Şəkil yüklənə bilmədi. Zəhmət olmasa yenidən cəhd edin.')
+                    setReferenceImage(null)
+                    if (fileInputRef.current) {
+                      fileInputRef.current.value = ''
+                    }
+                  }}
                 />
                 <button
                   type="button"
                   onClick={() => {
+                    if (referenceImage && referenceImage.startsWith('blob:')) {
+                      URL.revokeObjectURL(referenceImage)
+                    }
                     setReferenceImage(null)
                     if (fileInputRef.current) {
                       fileInputRef.current.value = ''
@@ -315,7 +489,7 @@ export default function Create() {
                   className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity"
                   aria-label={t('removeImage') || 'Remove image'}
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
             )}
@@ -484,18 +658,21 @@ export default function Create() {
                   isGenerating ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
-                {selectedToolData && (
-                  <>
-                    <Zap className="w-4 h-4 text-blue-400" />
-                    <span className="text-white font-medium">{selectedToolData.creditCost}</span>
-                    <span className="text-gray-300">{selectedToolData.name}</span>
-                    {getToolDetails(selectedToolData) && (
-                      <span className="px-3 py-1 bg-dark-hover rounded-full text-xs text-gray-400">
-                        {getToolDetails(selectedToolData)}
-                      </span>
-                    )}
-                  </>
-                )}
+                {selectedToolData && (() => {
+                  const ToolIcon = getToolIcon(selectedToolData)
+                  return (
+                    <>
+                      <ToolIcon className="w-4 h-4 text-blue-400" />
+                      <span className="text-white font-medium">{selectedToolData.creditCost}</span>
+                      <span className="text-gray-300">{selectedToolData.name}</span>
+                      {getToolDetails(selectedToolData) && (
+                        <span className="px-3 py-1 bg-dark-hover rounded-full text-xs text-gray-400">
+                          {getToolDetails(selectedToolData)}
+                        </span>
+                      )}
+                    </>
+                  )
+                })()}
                 <ChevronDown className="w-4 h-4 ml-2" />
               </button>
 
@@ -557,9 +734,19 @@ export default function Create() {
                             }`}
                           >
                             <div className="flex items-center space-x-3 flex-1 min-w-0">
-                              <Zap className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                              {(() => {
+                                const ToolIcon = getToolIconForList(tool)
+                                return <ToolIcon className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                              })()}
                               <span className="text-gray-900 dark:text-white font-medium text-sm">{tool.creditCost}</span>
-                              <span className="text-gray-600 dark:text-gray-300 text-sm truncate">{tool.name}</span>
+                              <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                <span className="text-gray-600 dark:text-gray-300 text-sm truncate">{tool.name}</span>
+                                {tool.requiresImage && (
+                                  <span className="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 rounded text-[10px] font-medium flex-shrink-0">
+                                    I2V
+                                  </span>
+                                )}
+                              </div>
                             </div>
                             {getToolDetails(tool) && (
                               <span className="px-3 py-1 bg-gray-100 dark:bg-dark-hover rounded-full text-xs text-gray-500 dark:text-gray-400 ml-3">
@@ -611,6 +798,16 @@ export default function Create() {
                     <div className="mb-6 pb-4 border-b border-gray-200 dark:border-dark-border">
                       <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('cost') || 'Cost'}</div>
                       <div className="text-2xl font-bold text-blue-400">+{selectedToolData?.creditCost || 0}</div>
+                      {contentType === 'video' && selectedToolData?.tokenCost && (
+                        <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                          {selectedToolData.tokenCost} token
+                        </div>
+                      )}
+                      {contentType === 'image' && selectedToolData?.tokenCost && (
+                        <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                          {selectedToolData.tokenCost} token
+                        </div>
+                      )}
                     </div>
 
                     {/* Video-specific controls */}
@@ -832,8 +1029,229 @@ export default function Create() {
               </p>
             </div>
           )}
+
+          {/* Templates Section */}
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              {t('templates') || 'Templates'}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+              {templates
+                .filter(template => template.type === contentType)
+                .map((template) => (
+                  <div
+                    key={template.id}
+                    className="bg-white dark:bg-dark-card rounded-lg border border-gray-200 dark:border-dark-border p-0 hover:border-blue-500 dark:hover:border-blue-500 transition-colors group overflow-hidden relative"
+                  >
+                    <button
+                      onClick={() => {
+                        setPrompt(template.prompt)
+                        // Auto-switch content type if needed
+                        if (template.type !== contentType) {
+                          setContentType(template.type)
+                        }
+                        // Auto-select model if specified
+                        if (template.modelId) {
+                          const modelExists = availableTools.find(tool => tool.id === template.modelId)
+                          if (modelExists) {
+                            setSelectedTool(template.modelId)
+                          }
+                        }
+                        // If template requires image, show info and open file input
+                        if (template.requiresImage) {
+                          info('Bu template üçün şəkil seçməlisiniz.')
+                          setTimeout(() => {
+                            if (fileInputRef.current) {
+                              fileInputRef.current.click()
+                            }
+                          }, 300)
+                        }
+                      }}
+                      className="w-full text-left"
+                    >
+                    <div 
+                      className="aspect-[16/10] bg-gray-100 dark:bg-dark-hover rounded-lg overflow-hidden relative"
+                      onMouseEnter={(e) => {
+                        if (template.type === 'video') {
+                          const video = e.currentTarget.querySelector('video') as HTMLVideoElement
+                          if (video) {
+                            video.play().catch(() => {})
+                          }
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (template.type === 'video') {
+                          const video = e.currentTarget.querySelector('video') as HTMLVideoElement
+                          if (video) {
+                            video.pause()
+                            video.currentTime = 0
+                          }
+                        }
+                      }}
+                    >
+                      {template.type === 'video' ? (
+                        <video
+                          src={template.thumbnail}
+                          className="w-full h-full object-cover"
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                        />
+                      ) : (
+                        <img
+                          src={template.thumbnail}
+                          alt={template.name}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                        <ArrowRight className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white px-3 py-2">
+                      {template.name}
+                    </h3>
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelectedTemplatePreview(template)
+                      }}
+                      className="absolute top-2 right-2 p-2 bg-black/50 hover:bg-black/70 rounded-lg text-white opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                      title="Preview"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Template Preview Modal */}
+      {selectedTemplatePreview && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+            onClick={() => setSelectedTemplatePreview(null)}
+          >
+            <div
+              className="bg-white dark:bg-dark-card rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-dark-border">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                  {selectedTemplatePreview.name}
+                </h3>
+                <button
+                  onClick={() => setSelectedTemplatePreview(null)}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                </button>
+              </div>
+
+              {/* Preview Content */}
+              <div className="flex-1 overflow-auto p-4">
+                <div className="aspect-video bg-gray-100 dark:bg-dark-hover rounded-lg overflow-hidden mb-4">
+                  {selectedTemplatePreview.type === 'video' ? (
+                    <video
+                      src={selectedTemplatePreview.thumbnail}
+                      className="w-full h-full object-contain"
+                      controls
+                      autoPlay
+                      loop
+                      muted
+                    />
+                  ) : (
+                    <img
+                      src={selectedTemplatePreview.thumbnail}
+                      alt={selectedTemplatePreview.name}
+                      className="w-full h-full object-contain"
+                    />
+                  )}
+                </div>
+
+                {/* Prompt */}
+                <div className="mb-4">
+                  <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Prompt:
+                  </h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-dark-hover p-3 rounded-lg">
+                    {selectedTemplatePreview.prompt}
+                  </p>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="p-4 border-t border-gray-200 dark:border-dark-border flex items-center justify-end space-x-3">
+                <button
+                  onClick={() => setSelectedTemplatePreview(null)}
+                  className="px-4 py-2 bg-gray-100 dark:bg-dark-hover hover:bg-gray-200 dark:hover:bg-dark-border text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
+                >
+                  Bağla
+                </button>
+                <button
+                  onClick={() => {
+                    setPrompt(selectedTemplatePreview.prompt)
+                    const templateModelId = selectedTemplatePreview.modelId
+                    const templateType = selectedTemplatePreview.type
+                    const templateRequiresImage = selectedTemplatePreview.requiresImage
+                    
+                    // Auto-switch content type if needed
+                    if (templateType !== contentType) {
+                      setContentType(templateType)
+                    }
+                    
+                    // Auto-select model - wait for contentType to update if it changed
+                    if (templateModelId) {
+                      if (templateType !== contentType) {
+                        // Wait for contentType to update and availableTools to refresh
+                        setTimeout(() => {
+                          const updatedAvailableTools = aiTools.filter(tool => {
+                            if (tool.category !== templateType || !tool.enabled) return false
+                            return true
+                          })
+                          const modelExists = updatedAvailableTools.find(tool => tool.id === templateModelId)
+                          if (modelExists) {
+                            setSelectedTool(templateModelId)
+                          }
+                        }, 100)
+                      } else {
+                        // Content type already matches, select immediately
+                        const modelExists = availableTools.find(tool => tool.id === templateModelId)
+                        if (modelExists) {
+                          setSelectedTool(templateModelId)
+                        }
+                      }
+                    }
+                    
+                    // If template requires image, show info and open file input
+                    if (templateRequiresImage) {
+                      info('Bu template üçün şəkil seçməlisiniz.')
+                      setTimeout(() => {
+                        if (fileInputRef.current) {
+                          fileInputRef.current.click()
+                        }
+                      }, templateType !== contentType ? 500 : 300)
+                    }
+                    
+                    setSelectedTemplatePreview(null)
+                    // Scroll to top
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
+                  className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors font-medium"
+                >
+                  İstifadə Et
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Add to prompt presets modal */}
       {showPromptLibrary && (

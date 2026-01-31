@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Search, History, Zap, Sparkles } from 'lucide-react'
 import { useCreditStore } from '../store/creditStore'
 import { useAuthStore } from '../store/authStore'
 import { useTranslation } from '../store/languageStore'
 import { useSearchStore } from '../store/searchStore'
+import { subscriptionAPI } from '../services/api'
 import UpgradeModal from './UpgradeModal'
 import ProfileDropdown from './ProfileDropdown'
 import ThemeToggle from './ThemeToggle'
@@ -15,9 +16,27 @@ export default function Header() {
   const { toggleSearch } = useSearchStore()
   const navigate = useNavigate()
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const [hasSubscription, setHasSubscription] = useState(false)
   const t = useTranslation()
 
-  // Profile is already fetched by App.tsx initializeAuth, no need to fetch here
+  // Check subscription for authenticated users
+  useEffect(() => {
+    const checkSubscription = async () => {
+      if (isAuthenticated) {
+        try {
+          const subscriptionInfo = await subscriptionAPI.getInfo()
+          setHasSubscription(subscriptionInfo.has_subscription || false)
+        } catch (error) {
+          console.error('Error checking subscription:', error)
+          setHasSubscription(false)
+        }
+      } else {
+        setHasSubscription(false)
+      }
+    }
+
+    checkSubscription()
+  }, [isAuthenticated])
 
   return (
     <>
@@ -30,18 +49,14 @@ export default function Header() {
                 <span>Burlart</span>
               </Link>
               <nav className="hidden md:flex items-center space-x-4">
-                <Link
-                  to="/landing"
-                  className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                >
-                  {t('packages')}
-                </Link>
-                <Link
-                  to="/documents"
-                  className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                >
-                  {t('documents') || 'Documents'}
-                </Link>
+                {(!isAuthenticated || !hasSubscription) && (
+                  <Link
+                    to="/landing"
+                    className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  >
+                    {t('packages')}
+                  </Link>
+                )}
                 <Link
                   to="/create"
                   className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
@@ -55,20 +70,26 @@ export default function Header() {
                   {t('dashboard')}
                 </Link>
                 {isAuthenticated && (
-                  <>
-                    <Link
-                      to="/jobs"
-                      className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                    >
-                      {t('jobs')}
-                    </Link>
-                    <Link
-                      to="/billing"
-                      className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                    >
-                      {t('billing')}
-                    </Link>
-                  </>
+                  <Link
+                    to="/jobs"
+                    className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  >
+                    {t('jobs')}
+                  </Link>
+                )}
+                <Link
+                  to="/documents"
+                  className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                >
+                  {t('documents') || 'Documents'}
+                </Link>
+                {isAuthenticated && (
+                  <Link
+                    to="/billing"
+                    className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  >
+                    {t('billing')}
+                  </Link>
                 )}
               </nav>
             </div>

@@ -1,8 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { X, Zap, Check } from 'lucide-react'
 import { useSubscriptionStore, SubscriptionPlan as PlanType } from '../store/subscriptionStore'
 import { subscriptionPlans } from '../data/subscriptionPlans'
 import { useCreditStore } from '../store/creditStore'
+import { subscriptionAPI } from '../services/api'
+import { useAuthStore } from '../store/authStore'
 
 interface UpgradeModalProps {
   isOpen: boolean
@@ -12,23 +15,42 @@ interface UpgradeModalProps {
 export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const { subscription, setSubscription } = useSubscriptionStore()
   const { addCredits } = useCreditStore()
+  const { user } = useAuthStore()
+  const navigate = useNavigate()
   const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null)
+  const [currentSubscriptionPlan, setCurrentSubscriptionPlan] = useState<string | null>(null)
+  const [isLoadingSubscription, setIsLoadingSubscription] = useState(false)
+
+  // Get current subscription plan
+  useEffect(() => {
+    if (isOpen && user) {
+      const fetchSubscriptionInfo = async () => {
+        try {
+          setIsLoadingSubscription(true)
+          const subscriptionInfo = await subscriptionAPI.getInfo()
+          if (subscriptionInfo.plan) {
+            setCurrentSubscriptionPlan(subscriptionInfo.plan)
+          }
+        } catch (error) {
+          console.error('Error fetching subscription info:', error)
+        } finally {
+          setIsLoadingSubscription(false)
+        }
+      }
+      fetchSubscriptionInfo()
+    }
+  }, [isOpen, user])
 
   if (!isOpen) return null
 
   const handlePurchase = (planId: PlanType) => {
-    const plan = subscriptionPlans.find((p) => p.id === planId)
-    if (!plan) return
+    // Don't allow selecting the same plan that user already has
+    if (currentSubscriptionPlan === planId) {
+      return
+    }
 
-    // Set subscription with auto-renew always enabled in backend
-    setSubscription(planId, true)
-
-    // Add credits to balance (existing credits remain)
-    addCredits(plan.credits)
-
-    alert(
-      `Təbriklər! ${plan.name} paketi aktivləşdirildi. ${plan.credits} kredit hesabınıza əlavə olundu.`
-    )
+    // Navigate to checkout page for payment
+    navigate(`/checkout?type=subscription&plan=${planId}`)
     onClose()
   }
 
@@ -74,21 +96,23 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
           )}
 
           {/* Plans Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6">
             {subscriptionPlans.map((plan) => {
-              const isCurrentPlan = subscription.plan === plan.id
+              const isCurrentPlan = currentSubscriptionPlan === plan.id || subscription.plan === plan.id
               const isSelected = selectedPlan === plan.id
 
               return (
                 <div
                   key={plan.id}
-                  className={`relative bg-dark-hover rounded-lg border-2 p-6 transition-all cursor-pointer ${
+                  className={`relative bg-dark-hover rounded-lg border-2 p-6 transition-all ${
+                    isCurrentPlan ? 'cursor-not-allowed opacity-75' : 'cursor-pointer'
+                  } ${
                     plan.popular
                       ? 'border-blue-500'
                       : isSelected
                         ? 'border-gray-500'
                         : 'border-dark-border hover:border-gray-500'
-                  } ${isCurrentPlan ? 'opacity-75' : ''}`}
+                  }`}
                   onClick={() => !isCurrentPlan && setSelectedPlan(plan.id)}
                 >
                   {plan.popular && (
@@ -135,16 +159,16 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
-                        setSelectedPlan(plan.id)
                         handlePurchase(plan.id)
                       }}
+                      disabled={isLoadingSubscription}
                       className={`w-full py-3 rounded-lg font-medium transition-colors ${
                         plan.popular
                           ? 'bg-blue-500 hover:bg-blue-600 text-white'
                           : 'bg-dark-card hover:bg-gray-700 text-white border border-dark-border'
-                      }`}
+                      } ${isLoadingSubscription ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                      Seçin
+                      {isLoadingSubscription ? 'Yüklənir...' : 'Seçin'}
                     </button>
                   )}
 
@@ -153,7 +177,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
                       disabled
                       className="w-full py-3 rounded-lg font-medium bg-dark-card text-gray-500 cursor-not-allowed border border-dark-border"
                     >
-                      Aktiv Paket
+                      Seçilmiş Paket
                     </button>
                   )}
                 </div>

@@ -11,6 +11,9 @@ export interface AITool {
   tier?: 'Fast' | 'Pro' | 'High'
   hasSound?: boolean
   duration?: string // e.g., "4s", "5s", "6s"
+  requiresImage?: boolean // For image-to-video models
+  falModelId?: string // Backend fal.ai model ID
+  tokenCost?: number // Token cost for text-to-video models
 }
 
 export interface User {
