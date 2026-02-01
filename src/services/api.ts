@@ -4,8 +4,8 @@ import axios from 'axios';
 // In development, it falls back to localhost
 // In production, set VITE_API_BASE_URL in your environment (e.g. https://api.burlart.az/api/auth)
 const API_BASE_URL =
-  //  (import.meta as any).env.VITE_API_BASE_URL || 'http://localhost:8000/api/auth';
-  (import.meta as any).env.VITE_API_BASE_URL || 'https://api.burlart.az/api/auth';
+   (import.meta as any).env.VITE_API_BASE_URL || 'http://localhost:8000/api/auth';
+  // (import.meta as any).env.VITE_API_BASE_URL || 'https://api.burlart.az/api/auth';
 
 // Log API base URL for debugging
 console.log('[API] Base URL:', API_BASE_URL);

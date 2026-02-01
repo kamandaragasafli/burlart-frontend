@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Search, History, Zap, Sparkles } from 'lucide-react'
+import { Search, History, Zap, Sparkles, Menu, X } from 'lucide-react'
 import { useCreditStore } from '../store/creditStore'
 import { useAuthStore } from '../store/authStore'
 import { useTranslation } from '../store/languageStore'
@@ -17,6 +17,7 @@ export default function Header() {
   const navigate = useNavigate()
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [hasSubscription, setHasSubscription] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const t = useTranslation()
 
   // Check subscription for authenticated users
@@ -41,14 +42,14 @@ export default function Header() {
   return (
     <>
       <header className="sticky top-0 z-50 bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-dark-border">
-        <div className="container mx-auto px-6 py-3">
+        <div className="container mx-auto px-3 sm:px-4 md:px-6 py-2 sm:py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
-              <Link to="/" className="flex items-center space-x-2 text-xl font-bold italic text-gray-900 dark:text-white">
-                <Sparkles className="w-5 h-5 text-blue-400" />
-                <span>Burlart</span>
+            <div className="flex items-center space-x-3 sm:space-x-4 md:space-x-6">
+              <Link to="/" className="flex items-center space-x-1.5 sm:space-x-2 text-lg sm:text-xl font-bold italic text-gray-900 dark:text-white">
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
+                <span className="hidden xs:inline">Burlart</span>
               </Link>
-              <nav className="hidden md:flex items-center space-x-4">
+              <nav className="hidden md:flex items-center space-x-3 lg:space-x-4">
                 {(!isAuthenticated || !hasSubscription) && (
                   <Link
                     to="/landing"
@@ -78,6 +79,12 @@ export default function Header() {
                   </Link>
                 )}
                 <Link
+                  to="/about"
+                  className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                >
+                  {t('about') || 'About'}
+                </Link>
+                <Link
                   to="/documents"
                   className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
@@ -94,7 +101,7 @@ export default function Header() {
               </nav>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 sm:space-x-2">
               <ThemeToggle />
               
               {isAuthenticated ? (
@@ -110,28 +117,28 @@ export default function Header() {
                         toggleSearch()
                       }
                     }}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
+                    className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
                     title={t('searchModels') || 'Search AI Models'}
                   >
                     <Search className="w-4 h-4 text-gray-600 dark:text-gray-300" />
                   </button>
                   <Link
                     to="/jobs"
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
+                    className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors hidden sm:block"
                     title={t('jobs')}
                   >
                     <History className="w-4 h-4 text-gray-600 dark:text-gray-300" />
                   </Link>
-                  <div className="flex items-center space-x-2 px-3 py-1.5 bg-gray-100 dark:bg-dark-card rounded-lg border border-gray-200 dark:border-dark-border">
+                  <div className="hidden sm:flex items-center space-x-1.5 sm:space-x-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-gray-100 dark:bg-dark-card rounded-lg border border-gray-200 dark:border-dark-border">
                     <span className="text-xs text-gray-600 dark:text-gray-400">{t('credits')}:</span>
-                    <span className="text-sm font-semibold text-gray-900 dark:text-white">{credits}</span>
+                    <span className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">{credits}</span>
                   </div>
                   <button
                     onClick={() => setShowUpgradeModal(true)}
-                    className="flex items-center space-x-2 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors"
+                    className="hidden sm:flex items-center space-x-1.5 sm:space-x-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs sm:text-sm font-medium transition-colors"
                   >
                     <Zap className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">{t('upgrade')}</span>
+                    <span className="hidden lg:inline">{t('upgrade')}</span>
                   </button>
                   <ProfileDropdown />
                 </>
@@ -139,20 +146,112 @@ export default function Header() {
                 <>
                   <Link
                     to="/login"
-                    className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors text-sm font-medium capitalize"
+                    className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors text-xs sm:text-sm font-medium capitalize"
                   >
                     {t('login')}
                   </Link>
                   <Link
                     to="/register"
-                    className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors capitalize"
+                    className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs sm:text-sm font-medium transition-colors capitalize"
                   >
                     {t('register')}
                   </Link>
                 </>
               )}
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? (
+                  <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                ) : (
+                  <Menu className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                )}
+              </button>
             </div>
           </div>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden mt-3 pt-3 border-t border-gray-200 dark:border-dark-border">
+              <nav className="flex flex-col space-y-2">
+                {(!isAuthenticated || !hasSubscription) && (
+                  <Link
+                    to="/landing"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
+                  >
+                    {t('packages')}
+                  </Link>
+                )}
+                <Link
+                  to="/create"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
+                >
+                  {t('create')}
+                </Link>
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
+                >
+                  {t('dashboard')}
+                </Link>
+                {isAuthenticated && (
+                  <>
+                    <Link
+                      to="/jobs"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
+                    >
+                      {t('jobs')}
+                    </Link>
+                    <div className="flex items-center justify-between px-3 py-2 bg-gray-100 dark:bg-dark-card rounded-lg">
+                      <span className="text-xs text-gray-600 dark:text-gray-400">{t('credits')}:</span>
+                      <span className="text-sm font-semibold text-gray-900 dark:text-white">{credits}</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setShowUpgradeModal(true)
+                        setMobileMenuOpen(false)
+                      }}
+                      className="flex items-center justify-center space-x-2 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors"
+                    >
+                      <Zap className="w-4 h-4" />
+                      <span>{t('upgrade')}</span>
+                    </button>
+                  </>
+                )}
+                <Link
+                  to="/about"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
+                >
+                  {t('about') || 'About'}
+                </Link>
+                <Link
+                  to="/documents"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
+                >
+                  {t('documents') || 'Documents'}
+                </Link>
+                {isAuthenticated && (
+                  <Link
+                    to="/billing"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
+                  >
+                    {t('billing')}
+                  </Link>
+                )}
+              </nav>
+            </div>
+          )}
         </div>
       </header>
       <UpgradeModal

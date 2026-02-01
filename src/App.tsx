@@ -11,6 +11,7 @@ import Templates from './pages/Templates'
 import Settings from './pages/Settings'
 import Documents from './pages/Documents'
 import Profile from './pages/Profile'
+import About from './pages/About'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import MyJobs from './pages/MyJobs'
@@ -71,6 +72,7 @@ function AppContent() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/documents" element={<Documents />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/about" element={<About />} />
         <Route path="/jobs" element={<MyJobs />} />
         <Route path="/billing" element={<Billing />} />
         <Route path="/checkout" element={<Checkout />} />

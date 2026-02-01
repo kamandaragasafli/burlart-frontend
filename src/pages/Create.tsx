@@ -444,23 +444,23 @@ export default function Create() {
         url="https://timera.ai/create"
       />
       {/* Main Content Area */}
-      <div className="flex-1 flex items-start justify-center px-6 pt-10 pb-16 md:pt-16">
+      <div className="flex-1 flex items-start justify-center px-3 sm:px-4 md:px-6 pt-6 sm:pt-8 md:pt-10 pb-12 sm:pb-16">
         <div className="w-full max-w-4xl">
           {/* Input Section */}
-          <div className="relative mb-8">
+          <div className="relative mb-6 sm:mb-8">
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder={t('createPromptPlaceholder') || 'What do you want to create?'}
-              className={`w-full h-48 bg-white dark:bg-dark-card border-2 border-gray-200 dark:border-dark-border rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none shadow-sm ${
-                referenceImage ? 'pl-24 pr-12 pt-6 pb-6' : 'p-6'
+              className={`w-full h-32 sm:h-40 md:h-48 bg-white dark:bg-dark-card border-2 border-gray-200 dark:border-dark-border rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm sm:text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none shadow-sm ${
+                referenceImage ? 'pl-20 sm:pl-24 pr-10 sm:pr-12 pt-4 sm:pt-6 pb-4 sm:pb-6' : 'p-4 sm:p-6'
               }`}
               disabled={isGenerating}
             />
             
             {/* Reference image preview inside textarea */}
             {referenceImage && (
-              <div className="absolute top-6 left-6 w-20 h-20 rounded-md border-2 border-blue-400 dark:border-blue-500 overflow-hidden bg-gray-100 dark:bg-dark-hover shadow-lg group z-10">
+              <div className="absolute top-3 sm:top-4 md:top-6 left-3 sm:left-4 md:left-6 w-16 h-16 sm:w-20 sm:h-20 rounded-md border-2 border-blue-400 dark:border-blue-500 overflow-hidden bg-gray-100 dark:bg-dark-hover shadow-lg group z-10">
                 <img
                   src={referenceImage}
                   alt="Reference thumbnail"
@@ -488,7 +488,7 @@ export default function Create() {
                   className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity"
                   aria-label={t('removeImage') || 'Remove image'}
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
             )}
@@ -497,16 +497,16 @@ export default function Create() {
             {prompt && !isGenerating && (
               <button
                 onClick={() => setPrompt('')}
-                className="absolute top-4 right-4 p-2 hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
+                className="absolute top-3 sm:top-4 right-3 sm:right-4 p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
               >
-                <Eraser className="w-5 h-5 text-gray-500 dark:text-gray-300" />
+                <Eraser className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-300" />
               </button>
             )}
           </div>
 
           {generatedVideo && (
-            <div className="mb-6 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg p-4 shadow-sm">
-              <h3 className="text-gray-900 dark:text-white font-medium mb-3">{t('generatedVideo') || 'Generated Video'}</h3>
+            <div className="mb-4 sm:mb-6 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg p-3 sm:p-4 shadow-sm">
+              <h3 className="text-gray-900 dark:text-white font-medium mb-2 sm:mb-3 text-sm sm:text-base">{t('generatedVideo') || 'Generated Video'}</h3>
               <video 
                 src={generatedVideo} 
                 controls 
@@ -515,9 +515,9 @@ export default function Create() {
             </div>
           )}
           {generatedImage && (
-            <div className="mb-6 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg p-4 shadow-sm">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-gray-900 dark:text-white font-medium">{t('generatedImage') || 'Generated Image'}</h3>
+            <div className="mb-4 sm:mb-6 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg p-3 sm:p-4 shadow-sm">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 sm:mb-3 gap-2">
+                <h3 className="text-gray-900 dark:text-white font-medium text-sm sm:text-base">{t('generatedImage') || 'Generated Image'}</h3>
                 <button
                   onClick={() => {
                     const link = document.createElement('a')
@@ -527,9 +527,9 @@ export default function Create() {
                     link.click()
                     document.body.removeChild(link)
                   }}
-                  className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors"
+                  className="flex items-center space-x-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs sm:text-sm font-medium transition-colors w-full sm:w-auto justify-center"
                 >
-                  <Download className="w-4 h-4" />
+                  <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span>{t('download') || 'Download'}</span>
                 </button>
               </div>
@@ -542,21 +542,21 @@ export default function Create() {
           )}
 
           {/* Action Buttons Row */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-3">
+          <div className="flex items-center justify-between mb-3 sm:mb-4 md:mb-6 gap-2">
+            <div className="flex items-center space-x-2">
               <button 
                 onClick={handleImageMenuClick}
-                className="p-3 bg-gray-100 dark:bg-dark-card hover:bg-gray-200 dark:hover:bg-dark-hover border border-gray-200 dark:border-dark-border rounded-lg transition-colors"
+                className="p-2 bg-gray-100 dark:bg-dark-card hover:bg-gray-200 dark:hover:bg-dark-hover border border-gray-200 dark:border-dark-border rounded-lg transition-colors"
               >
-                <Plus className="w-5 h-5 text-gray-800 dark:text-white" />
+                <Plus className="w-4 h-4 text-gray-800 dark:text-white" />
               </button>
               <div className="relative">
                 <button
                   type="button"
                   onClick={() => setShowPromptMenu((prev) => !prev)}
-                  className="p-3 bg-gray-100 dark:bg-dark-card hover:bg-gray-200 dark:hover:bg-dark-hover border border-gray-200 dark:border-dark-border rounded-lg transition-colors"
+                  className="p-2 bg-gray-100 dark:bg-dark-card hover:bg-gray-200 dark:hover:bg-dark-hover border border-gray-200 dark:border-dark-border rounded-lg transition-colors"
                 >
-                  <Sliders className="w-5 h-5 text-gray-800 dark:text-white" />
+                  <Sliders className="w-4 h-4 text-gray-800 dark:text-white" />
                 </button>
 
                 {showPromptMenu && (
@@ -609,51 +609,51 @@ export default function Create() {
             <button
               onClick={handleCreate}
               disabled={!prompt.trim() || isGenerating}
-              className="w-14 h-14 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-full flex items-center justify-center transition-colors"
+              className="w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-full flex items-center justify-center transition-colors flex-shrink-0"
             >
               {isGenerating ? (
-                <Loader2 className="w-6 h-6 text-white animate-spin" />
+                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white animate-spin" />
               ) : (
-                <ArrowRight className="w-6 h-6 text-white" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
               )}
             </button>
           </div>
 
           {/* Content Type and Tools Selection */}
-          <div className="flex items-center space-x-3 flex-wrap gap-2">
+          <div className="flex items-center space-x-2 flex-wrap gap-2">
             {/* Image/Video Toggle */}
             <button
               onClick={() => setContentType('image')}
               disabled={isGenerating}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
+              className={`px-3 py-1.5 sm:py-2 rounded-lg font-medium transition-colors flex items-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm ${
                 contentType === 'image'
                   ? 'bg-blue-600 text-white border border-blue-600'
                   : 'bg-gray-100 dark:bg-dark-card border border-gray-200 dark:border-dark-border text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-dark-hover'
               } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              <ImageIcon className="w-4 h-4" />
+              <ImageIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span>{t('image') || 'Image'}</span>
             </button>
             
             <button
               onClick={() => setContentType('video')}
               disabled={isGenerating}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
+              className={`px-3 py-1.5 sm:py-2 rounded-lg font-medium transition-colors flex items-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm ${
                 contentType === 'video'
                   ? 'bg-blue-600 text-white border border-blue-600'
                   : 'bg-gray-100 dark:bg-dark-card border border-gray-200 dark:border-dark-border text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-dark-hover'
               } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              <VideoIcon className="w-4 h-4" />
+              <VideoIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span>{t('video') || 'Video'}</span>
             </button>
 
             {/* Tool Dropdown */}
-            <div className="relative">
+            <div className="relative flex-1 min-w-0">
               <button
                 onClick={() => setShowToolsDropdown(!showToolsDropdown)}
                 disabled={isGenerating}
-                className={`px-4 py-2 bg-gray-100 dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg font-medium text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-dark-hover transition-colors flex items-center space-x-2 ${
+                className={`w-full px-3 py-1.5 sm:py-2 bg-gray-100 dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg font-medium text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-dark-hover transition-colors flex items-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm ${
                   isGenerating ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
@@ -661,18 +661,18 @@ export default function Create() {
                   const ToolIcon = getToolIcon(selectedToolData)
                   return (
                     <>
-                      <ToolIcon className="w-4 h-4 text-blue-400" />
-                      <span className="text-white font-medium">{selectedToolData.creditCost}</span>
-                      <span className="text-gray-300">{selectedToolData.name}</span>
+                      <ToolIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-400 flex-shrink-0" />
+                      <span className="text-white font-medium text-xs sm:text-sm">{selectedToolData.creditCost}</span>
+                      <span className="text-gray-300 text-xs sm:text-sm truncate min-w-0">{selectedToolData.name}</span>
                       {getToolDetails(selectedToolData) && (
-                        <span className="px-3 py-1 bg-dark-hover rounded-full text-xs text-gray-400">
+                        <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-dark-hover rounded-full text-[10px] sm:text-xs text-gray-400 flex-shrink-0 hidden sm:inline">
                           {getToolDetails(selectedToolData)}
                         </span>
                       )}
                     </>
                   )
                 })()}
-                <ChevronDown className="w-4 h-4 ml-2" />
+                <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-auto flex-shrink-0" />
               </button>
 
               {showToolsDropdown && (
@@ -681,7 +681,7 @@ export default function Create() {
                     className="fixed inset-0 z-10"
                     onClick={() => setShowToolsDropdown(false)}
                   />
-                    <div className="absolute top-full left-0 mt-2 w-96 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg shadow-lg z-20 max-h-96 overflow-hidden flex flex-col">
+                    <div className="absolute top-full left-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg shadow-lg z-20 max-h-96 overflow-hidden flex flex-col">
                     {/* Search Input */}
                     <div className="p-3 border-b border-gray-200 dark:border-dark-border">
                       <div className="relative">
@@ -778,12 +778,12 @@ export default function Create() {
               <button 
                 onClick={() => setShowControlsDropdown(!showControlsDropdown)}
                 disabled={isGenerating}
-                className={`px-4 py-2 bg-gray-100 dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg font-medium text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-dark-hover transition-colors flex items-center space-x-2 ${
+                className={`px-3 py-1.5 sm:py-2 bg-gray-100 dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg font-medium text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-dark-hover transition-colors flex items-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm ${
                   isGenerating ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
                 <span>{t('controls') || 'Controls'}</span>
-                <ChevronDown className="w-4 h-4" />
+                <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
 
               {showControlsDropdown && (
@@ -792,11 +792,11 @@ export default function Create() {
                     className="fixed inset-0 z-10"
                     onClick={() => setShowControlsDropdown(false)}
                   />
-                  <div className="absolute top-full right-0 mt-2 w-96 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg shadow-lg z-20 p-6 max-h-[80vh] overflow-y-auto">
+                  <div className="absolute top-full right-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg shadow-lg z-20 p-4 sm:p-6 max-h-[80vh] overflow-y-auto">
                     {/* Cost */}
-                    <div className="mb-6 pb-4 border-b border-gray-200 dark:border-dark-border">
-                      <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('cost') || 'Cost'}</div>
-                      <div className="text-2xl font-bold text-blue-400">+{selectedToolData?.creditCost || 0}</div>
+                    <div className="mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-gray-200 dark:border-dark-border">
+                      <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">{t('cost') || 'Cost'}</div>
+                      <div className="text-xl sm:text-2xl font-bold text-blue-400">+{selectedToolData?.creditCost || 0}</div>
                       {contentType === 'video' && selectedToolData?.tokenCost && (
                         <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                           {selectedToolData.tokenCost} token
@@ -814,8 +814,8 @@ export default function Create() {
                       <>
                         {/* Version */}
                         {selectedTool === 'veo' && (
-                          <div className="mb-6">
-                            <div className="text-sm text-gray-400 mb-3">{t('version') || 'Version'}</div>
+                          <div className="mb-4 sm:mb-6">
+                            <div className="text-xs sm:text-sm text-gray-400 mb-2 sm:mb-3">{t('version') || 'Version'}</div>
                             <div className="space-y-2">
                               <label className="flex items-center space-x-3 cursor-pointer">
                                 <input
@@ -843,22 +843,22 @@ export default function Create() {
 
                         {/* Character Reference */}
                         {selectedTool === 'veo' && (
-                          <div className="mb-6">
-                            <label className="flex items-center space-x-3 cursor-pointer">
+                          <div className="mb-4 sm:mb-6">
+                            <label className="flex items-center space-x-2 sm:space-x-3 cursor-pointer">
                               <input
                                 type="checkbox"
                                 checked={characterReference}
                                 onChange={(e) => setCharacterReference(e.target.checked)}
                                 className="w-4 h-4 text-blue-500 border-gray-600 rounded focus:ring-blue-500 bg-dark-hover"
                               />
-                              <span className="text-white">{t('characterReference') || '3.1 + Character'}</span>
+                              <span className="text-sm sm:text-base text-white">{t('characterReference') || '3.1 + Character'}</span>
                             </label>
                           </div>
                         )}
 
                         {/* Sound Generation */}
-                        <div className="mb-6">
-                          <div className="text-sm text-gray-400 mb-3">{t('soundGeneration') || 'Sound generation'}</div>
+                        <div className="mb-4 sm:mb-6">
+                          <div className="text-xs sm:text-sm text-gray-400 mb-2 sm:mb-3">{t('soundGeneration') || 'Sound generation'}</div>
                           <div className="space-y-2">
                             <label className="flex items-center space-x-3 cursor-pointer">
                               <input
@@ -885,8 +885,8 @@ export default function Create() {
                         </div>
 
                         {/* Resolution */}
-                        <div className="mb-6">
-                          <div className="text-sm text-gray-400 mb-3">{t('resolution') || 'Resolution'}</div>
+                        <div className="mb-4 sm:mb-6">
+                          <div className="text-xs sm:text-sm text-gray-400 mb-2 sm:mb-3">{t('resolution') || 'Resolution'}</div>
                           <div className="space-y-2">
                             <label className="flex items-center space-x-3 cursor-pointer">
                               <input
@@ -912,8 +912,8 @@ export default function Create() {
                         </div>
 
                         {/* Length */}
-                        <div className="mb-6">
-                          <div className="text-sm text-gray-400 mb-3">{t('length') || 'Length'}</div>
+                        <div className="mb-4 sm:mb-6">
+                          <div className="text-xs sm:text-sm text-gray-400 mb-2 sm:mb-3">{t('length') || 'Length'}</div>
                           <div className="relative">
                             <input
                               type="range"
@@ -941,8 +941,8 @@ export default function Create() {
                     {contentType === 'image' && (
                       <>
                         {/* Resolution for images */}
-                        <div className="mb-6">
-                          <div className="text-sm text-gray-400 mb-3">{t('resolution') || 'Resolution'}</div>
+                        <div className="mb-4 sm:mb-6">
+                          <div className="text-xs sm:text-sm text-gray-400 mb-2 sm:mb-3">{t('resolution') || 'Resolution'}</div>
                           <div className="space-y-2">
                             <label className="flex items-center space-x-3 cursor-pointer">
                               <input
@@ -994,12 +994,12 @@ export default function Create() {
                     </div>
 
                     {/* Negative Prompt - Common for both */}
-                    <div className="mb-4">
-                      <div className="text-sm text-gray-400 mb-2">{t('negativePrompt') || 'Negative prompt'}</div>
+                    <div className="mb-3 sm:mb-4">
+                      <div className="text-xs sm:text-sm text-gray-400 mb-2">{t('negativePrompt') || 'Negative prompt'}</div>
                       <textarea
                         value={negativePrompt}
                         onChange={(e) => setNegativePrompt(e.target.value)}
-                        className="w-full px-3 py-2 bg-dark-hover border border-dark-border rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                        className="w-full px-2 sm:px-3 py-1.5 sm:py-2 bg-dark-hover border border-dark-border rounded-lg text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                         rows={3}
                         placeholder={contentType === 'video' 
                           ? (t('negativePromptPlaceholder') || 'What to avoid in the video...')
@@ -1030,11 +1030,11 @@ export default function Create() {
           )}
 
           {/* Templates Section */}
-          <div className="mt-12">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          <div className="mt-8 sm:mt-10 md:mt-12">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
               {t('templates') || 'Templates'}
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
               {templates
                 .filter(template => template.type === contentType)
                 .map((template) => (
@@ -1108,7 +1108,7 @@ export default function Create() {
                         <ArrowRight className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white px-3 py-2">
+                    <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 dark:text-white px-2 sm:px-3 py-2">
                       {template.name}
                     </h3>
                     </button>
@@ -1117,10 +1117,10 @@ export default function Create() {
                         e.stopPropagation()
                         setSelectedTemplatePreview(template)
                       }}
-                      className="absolute top-2 right-2 p-2 bg-black/50 hover:bg-black/70 rounded-lg text-white opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                      className="absolute top-2 right-2 p-1.5 sm:p-2 bg-black/50 hover:bg-black/70 rounded-lg text-white opacity-0 group-hover:opacity-100 transition-opacity z-10"
                       title="Preview"
                     >
-                      <Eye className="w-4 h-4" />
+                      <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
                   </div>
                 ))}
@@ -1133,16 +1133,16 @@ export default function Create() {
       {selectedTemplatePreview && (
         <>
           <div
-            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-2 sm:p-4"
             onClick={() => setSelectedTemplatePreview(null)}
           >
             <div
-              className="bg-white dark:bg-dark-card rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+              className="bg-white dark:bg-dark-card rounded-lg sm:rounded-xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-dark-border">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+              <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200 dark:border-dark-border">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white truncate pr-2">
                   {selectedTemplatePreview.name}
                 </h3>
                 <button
@@ -1175,21 +1175,21 @@ export default function Create() {
                 </div>
 
                 {/* Prompt */}
-                <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <div className="mb-3 sm:mb-4">
+                  <h4 className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                     Prompt:
                   </h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-dark-hover p-3 rounded-lg">
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-dark-hover p-2 sm:p-3 rounded-lg">
                     {selectedTemplatePreview.prompt}
                   </p>
                 </div>
               </div>
 
               {/* Footer */}
-              <div className="p-4 border-t border-gray-200 dark:border-dark-border flex items-center justify-end space-x-3">
+              <div className="p-3 sm:p-4 border-t border-gray-200 dark:border-dark-border flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 sm:space-x-3">
                 <button
                   onClick={() => setSelectedTemplatePreview(null)}
-                  className="px-4 py-2 bg-gray-100 dark:bg-dark-hover hover:bg-gray-200 dark:hover:bg-dark-border text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
+                  className="w-full sm:w-auto px-4 py-2 bg-gray-100 dark:bg-dark-hover hover:bg-gray-200 dark:hover:bg-dark-border text-gray-700 dark:text-gray-300 rounded-lg transition-colors text-sm"
                 >
                   Bağla
                 </button>
