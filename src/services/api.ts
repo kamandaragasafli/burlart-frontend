@@ -192,5 +192,13 @@ export const topupAPI = {
   },
 };
 
+// Payment API
+export const paymentAPI = {
+  completePayment: async (transactionId: string) => {
+    const response = await api.post('/payment/complete/', { transaction_id: transactionId });
+    return response.data;
+  },
+};
+
 export default api;
 

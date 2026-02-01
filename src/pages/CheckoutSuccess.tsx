@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { CheckCircle, ArrowRight } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
-import { subscriptionAPI, topupAPI } from '../services/api'
+import { subscriptionAPI, topupAPI, paymentAPI } from '../services/api'
 import { useToastStore } from '../store/toastStore'
 import SEO from '../components/SEO'
 
@@ -30,6 +30,40 @@ export default function CheckoutSuccess() {
 
     const completePayment = async () => {
       try {
+        // If we have a transaction_id, try to complete payment manually (webhook may have failed)
+        if (transactionId) {
+          try {
+            const result = await paymentAPI.completePayment(transactionId)
+            
+            if (result.success) {
+              // Payment completed successfully
+              console.log('Payment completed via manual completion', result)
+              
+              // Refresh profile to get updated credits
+              await fetchProfile()
+              
+              // Refresh subscription info if it was a subscription
+              if (result.payment_type === 'subscription') {
+                await subscriptionAPI.getInfo()
+                success('Abunəlik uğurla aktivləşdirildi!')
+              } else if (result.payment_type === 'topup') {
+                success('Kreditlər hesabınıza əlavə olundu!')
+              } else {
+                success('Ödəniş uğurla tamamlandı!')
+              }
+              
+              setProcessing(false)
+              return
+            } else {
+              // Payment not completed in EPOINT, but continue with other logic
+              console.warn('Payment not completed in EPOINT:', result.message)
+            }
+          } catch (error: any) {
+            // If manual completion fails, continue with other logic
+            console.error('Manual payment completion error:', error)
+          }
+        }
+
         // If this is a mock payment, we need to complete it via webhook simulation
         if (isMock && transactionId) {
           // For mock payments, the backend should auto-complete via webhook
