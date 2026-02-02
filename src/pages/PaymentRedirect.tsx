@@ -39,19 +39,33 @@ export default function PaymentRedirect({ type }: { type: 'success' | 'error' })
         setStatus('checking')
         
         // Wait a bit for webhook to process (webhook might complete payment)
-        await new Promise(resolve => setTimeout(resolve, 3000))
+        // Check multiple times if payment was completed
+        let attempts = 0
+        const maxAttempts = 5
         
-        // Try to refresh profile to see if credits were added
-        try {
-          await fetchProfile()
+        while (attempts < maxAttempts) {
+          await new Promise(resolve => setTimeout(resolve, 1000))
           
-          // Redirect to success page - webhook should have completed payment
-          navigate('/checkout/success?type=subscription')
-        } catch (error) {
-          console.error('Error fetching profile:', error)
-          // Still redirect to success page
-          navigate('/checkout/success?type=subscription')
+          // Try to refresh profile to see if credits were added
+          try {
+            await fetchProfile()
+            
+            // Check if user has subscription or credits (webhook completed payment)
+            const user = useAuthStore.getState().user
+            if (user && (user.credits > 0 || user.has_subscription)) {
+              // Payment completed! Redirect to success page
+              navigate('/checkout/success?type=subscription')
+              return
+            }
+          } catch (error) {
+            console.error('Error fetching profile:', error)
+          }
+          
+          attempts++
         }
+        
+        // After max attempts, redirect anyway (webhook might be delayed)
+        navigate('/checkout/success?type=subscription')
       } else {
         // Error case - redirect to cancel page
         navigate('/checkout/cancel?error=Payment failed')
