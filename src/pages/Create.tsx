@@ -741,8 +741,8 @@ export default function Create() {
                               <div className="flex items-center space-x-2 flex-1 min-w-0">
                                 <span className="text-gray-600 dark:text-gray-300 text-sm truncate">{tool.name}</span>
                                 {tool.requiresImage && (
-                                  <span className="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 rounded text-[10px] font-medium flex-shrink-0">
-                                    I2V
+                                  <span className="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 rounded text-[10px] font-medium flex-shrink-0 whitespace-nowrap">
+                                    {tool.category === 'video' ? 'Şəkil→Video' : 'Şəkil Redaktə'}
                                   </span>
                                 )}
                               </div>

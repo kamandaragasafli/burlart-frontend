@@ -115,9 +115,13 @@ export default function Landing() {
               <div className="relative inline-block">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur-2xl opacity-40 animate-pulse"></div>
                 <img 
-                  src="/favicon.jpeg" 
+                  src="/burlart-logo.png" 
                   alt="Burlart Logo" 
                   className="w-16 h-16 sm:w-20 sm:h-20 mx-auto relative z-10 object-contain"
+                  onError={(e) => {
+                    // Fallback to favicon if logo fails to load
+                    e.currentTarget.src = '/favicon.jpeg'
+                  }}
                 />
               </div>
 

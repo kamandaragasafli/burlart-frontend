@@ -46,7 +46,18 @@ export default function Header() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3 sm:space-x-4 md:space-x-6">
               <Link to="/" className="flex items-center space-x-1.5 sm:space-x-2 text-lg sm:text-xl font-bold italic text-gray-900 dark:text-white">
-                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
+                <img 
+                  src="/burlart-logo.png" 
+                  alt="Burlart Logo" 
+                  className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
+                  onError={(e) => {
+                    // Fallback to icon if logo fails to load
+                    e.currentTarget.style.display = 'none'
+                    const fallback = e.currentTarget.nextElementSibling as HTMLElement
+                    if (fallback) fallback.style.display = 'block'
+                  }}
+                />
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 hidden" />
                 <span className="hidden xs:inline">Burlart</span>
               </Link>
               <nav className="hidden md:flex items-center space-x-3 lg:space-x-4">
