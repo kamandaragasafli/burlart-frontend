@@ -19,6 +19,7 @@ import Billing from './pages/Billing'
 import Checkout from './pages/Checkout'
 import CheckoutSuccess from './pages/CheckoutSuccess'
 import CheckoutCancel from './pages/CheckoutCancel'
+import PaymentRedirect from './pages/PaymentRedirect'
 import { useThemeStore } from './store/themeStore'
 import { useAuthStore } from './store/authStore'
 import ToastContainer from './components/ToastContainer'
@@ -78,6 +79,9 @@ function AppContent() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/checkout/success" element={<CheckoutSuccess />} />
         <Route path="/checkout/cancel" element={<CheckoutCancel />} />
+        {/* EPOINT payment redirect routes */}
+        <Route path="/payment/success" element={<PaymentRedirect type="success" />} />
+        <Route path="/payment/error" element={<PaymentRedirect type="error" />} />
       </Routes>
     </div>
   )
