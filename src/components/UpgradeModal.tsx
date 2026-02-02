@@ -91,9 +91,9 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-br from-dark-card via-dark-card to-dark-hover rounded-xl border border-dark-border shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-        <div className="sticky top-0 bg-gradient-to-r from-dark-card to-dark-hover border-b border-dark-border p-6 z-10">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6">
+      <div className="bg-gradient-to-br from-dark-card via-dark-card to-dark-hover rounded-xl border border-dark-border shadow-2xl w-full max-w-7xl max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="sticky top-0 bg-gradient-to-r from-dark-card to-dark-hover border-b border-dark-border p-4 sm:p-6 z-10">
           <div className="flex items-center justify-between mb-4">
             <div className="flex-1">
               <h2 className="text-3xl font-bold text-white flex items-center space-x-3 mb-2">
@@ -145,7 +145,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           {/* Current Subscription Info */}
           {subscription.plan && (
             <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
@@ -169,7 +169,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
           {activeTab === 'subscription' && (
             <>
               {/* Plans Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             {subscriptionPlans.map((plan) => {
               const isCurrentPlan = currentSubscriptionPlan === plan.id || subscription.plan === plan.id
               const isSelected = selectedPlan === plan.id
@@ -177,7 +177,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
               return (
                 <div
                   key={plan.id}
-                  className={`relative bg-gradient-to-br from-dark-hover to-dark-card rounded-xl border-2 p-6 transition-all transform ${
+                  className={`relative bg-gradient-to-br from-dark-hover to-dark-card rounded-xl border-2 p-6 transition-all transform w-full ${
                     isCurrentPlan ? 'cursor-not-allowed opacity-75' : 'cursor-pointer hover:scale-[1.02] hover:shadow-xl'
                   } ${
                     plan.popular
@@ -283,11 +283,11 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                     {topupPackages.map((pkg) => (
                       <div
                         key={pkg.id}
-                        className={`relative bg-gradient-to-br from-dark-hover to-dark-card rounded-xl border-2 p-6 transition-all transform hover:scale-[1.02] hover:shadow-xl ${
+                        className={`relative bg-gradient-to-br from-dark-hover to-dark-card rounded-xl border-2 p-6 transition-all transform hover:scale-[1.02] hover:shadow-xl w-full ${
                           pkg.popular
                             ? 'border-blue-500 shadow-lg shadow-blue-500/20'
                             : 'border-dark-border hover:border-blue-400/50'
