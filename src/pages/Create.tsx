@@ -282,8 +282,8 @@ export default function Create() {
 
     if (user.credits < tool.creditCost) {
       const creditText = user.credits === 0 
-        ? 'Kreditləriniz bitib.' 
-        : `Kredit yetərsizdir. Tələb olunan: ${tool.creditCost} kredit, Mövcud: ${user.credits} kredit.`
+        ? 'Kreditləriniz bitib. Top-up alın.' 
+        : `Kredit yetərsizdir. Tələb olunan: ${tool.creditCost} kredit, Mövcud: ${user.credits} kredit. Top-up alın.`
       showError(creditText)
       setShowCreditModal(true)
       return
@@ -364,7 +364,7 @@ export default function Create() {
       if (error.response?.data?.error_type === 'INSUFFICIENT_CREDITS') {
         const required = error.response.data.required_credits
         const available = error.response.data.available_credits
-        showError(`Kredit yetərsizdir. Tələb olunan: ${required}, Mövcud: ${available}.`)
+        showError(`Kredit yetərsizdir. Tələb olunan: ${required}, Mövcud: ${available}`)
         setShowCreditModal(true)
       } else if (error.response?.data?.error) {
         showError(error.response.data.error)
