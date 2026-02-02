@@ -117,7 +117,7 @@ export default function Landing() {
                 <img 
                   src="/burlart-logo.png" 
                   alt="Burlart Logo" 
-                  className="w-16 h-16 sm:w-20 sm:h-20 mx-auto relative z-10 object-contain"
+                  className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 mx-auto relative z-10 object-contain"
                   onError={(e) => {
                     // Fallback to favicon if logo fails to load
                     e.currentTarget.src = '/favicon.jpeg'
