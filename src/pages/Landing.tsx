@@ -5,7 +5,6 @@ import { useAuthStore } from '../store/authStore'
 import { useTranslation } from '../store/languageStore'
 import { useThemeStore } from '../store/themeStore'
 import { subscriptionPlans } from '../data/subscriptionPlans'
-import { subscriptionAPI } from '../services/api'
 import { templates } from '../data/templates'
 import { aiTools } from '../data/tools'
 import SEO from '../components/SEO'
@@ -15,7 +14,7 @@ import Footer from '../components/Footer'
 
 export default function Landing() {
   const navigate = useNavigate()
-  const { user, isAuthenticated } = useAuthStore()
+  const { user } = useAuthStore()
   const { theme } = useThemeStore()
   const t = useTranslation()
   const [showCreditModal, setShowCreditModal] = useState(false)
