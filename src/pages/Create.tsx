@@ -1132,16 +1132,20 @@ export default function Create() {
             </div>
           </div>
 
-          {/* AI Tools Section */}
-          <div className="mt-12 sm:mt-16 md:mt-20">
-            <div className="mb-6 sm:mb-8">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                {t('aiToolsDashboard') || 'AI Alətləri'}
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-                {t('accessTools') || 'Bütün AI video və şəkil yaratma alətlərinə çıxış əldə edin'}
-              </p>
-            </div>
+        </div>
+      </div>
+
+      {/* AI Tools Section - Full Width */}
+      <div className="w-full bg-gray-50/50 dark:bg-dark-bg/50 py-12 sm:py-16 md:py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              {t('aiToolsDashboard') || 'AI Alətləri'}
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
+              {t('accessTools') || 'Bütün AI video və şəkil yaratma alətlərinə çıxış əldə edin'}
+            </p>
+          </div>
 
             {/* Search and Category Filter */}
             <div className="mb-6 space-y-4">
@@ -1263,7 +1267,6 @@ export default function Create() {
                 </div>
               )
             })()}
-          </div>
         </div>
       </div>
 
