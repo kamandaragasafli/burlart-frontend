@@ -13,8 +13,10 @@ export default function PaymentRedirect({ type }: { type: 'success' | 'error' })
     // Get all query parameters from EPOINT
     const params = new URLSearchParams(searchParams)
     
-    // Backend API URL
-    const backendUrl = import.meta.env.PROD 
+    // Backend API URL - detect production environment
+    const isProduction = window.location.hostname === 'burlart.az' || 
+                        window.location.hostname === 'www.burlart.az'
+    const backendUrl = isProduction 
       ? 'https://api.burlart.az'
       : 'http://localhost:8000'
     
