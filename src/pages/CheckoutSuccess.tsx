@@ -165,10 +165,10 @@ export default function CheckoutSuccess() {
 
           <div className="space-y-4">
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/create')}
               className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
             >
-              <span>Dashboard-a keç</span>
+              <span>Create-ə keç</span>
               <ArrowRight className="w-5 h-5" />
             </button>
             <button

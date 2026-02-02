@@ -73,14 +73,6 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  to="/dashboard"
-                  className="text-sm text-gray-400 hover:text-white transition-colors"
-                >
-                  {t('dashboard')}
-                </Link>
-              </li>
-              <li>
-                <Link
                   to="/documents"
                   className="text-sm text-gray-400 hover:text-white transition-colors"
                 >

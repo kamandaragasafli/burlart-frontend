@@ -13,10 +13,10 @@ export default function ToolPage() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-white mb-4">Tool not found</h2>
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/create')}
             className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg"
           >
-            Back to Dashboard
+            Back to Create
           </button>
         </div>
       </div>
@@ -27,11 +27,11 @@ export default function ToolPage() {
     <div className="min-h-screen bg-dark-bg">
       <div className="container mx-auto px-6 py-8">
         <button
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate('/create')}
           className="flex items-center space-x-2 text-gray-400 hover:text-white mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Dashboard</span>
+          <span>Back to Create</span>
         </button>
 
         <div className="max-w-4xl mx-auto">

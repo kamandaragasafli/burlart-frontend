@@ -58,28 +58,20 @@ export default function Header() {
                   }}
                 />
                 <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 hidden" />
-                <span className="hidden xs:inline">Burlart</span>
+                <span>Burlart</span>
               </Link>
               <nav className="hidden md:flex items-center space-x-3 lg:space-x-4">
-                {(!isAuthenticated || !hasSubscription) && (
-                  <Link
-                    to="/landing"
-                    className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                  >
-                    {t('packages')}
-                  </Link>
-                )}
+                <Link
+                  to="/landing"
+                  className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                >
+                  {t('packages')}
+                </Link>
                 <Link
                   to="/create"
                   className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
                   {t('create')}
-                </Link>
-                <Link
-                  to="/dashboard"
-                  className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                >
-                  {t('dashboard')}
                 </Link>
                 {isAuthenticated && (
                   <Link
@@ -119,9 +111,9 @@ export default function Header() {
                 <>
                   <button 
                     onClick={() => {
-                      // Navigate to dashboard if not already there
-                      if (window.location.pathname !== '/dashboard') {
-                        navigate('/dashboard')
+                      // Navigate to create if not already there
+                      if (window.location.pathname !== '/create') {
+                        navigate('/create')
                         // Small delay to ensure navigation completes before toggling
                         setTimeout(() => toggleSearch(), 100)
                       } else {
@@ -189,28 +181,19 @@ export default function Header() {
           {mobileMenuOpen && (
             <div className="md:hidden mt-3 pt-3 border-t border-gray-200 dark:border-dark-border">
               <nav className="flex flex-col space-y-2">
-                {(!isAuthenticated || !hasSubscription) && (
-                  <Link
-                    to="/landing"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
-                  >
-                    {t('packages')}
-                  </Link>
-                )}
+                <Link
+                  to="/landing"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
+                >
+                  {t('packages')}
+                </Link>
                 <Link
                   to="/create"
                   onClick={() => setMobileMenuOpen(false)}
                   className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
                 >
                   {t('create')}
-                </Link>
-                <Link
-                  to="/dashboard"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
-                >
-                  {t('dashboard')}
                 </Link>
                 {isAuthenticated && (
                   <>

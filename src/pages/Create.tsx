@@ -21,7 +21,8 @@ import {
   Music,
   Film,
   Crown,
-  Eye
+  Eye,
+  Heart
 } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 import { videoAPI, imageAPI, subscriptionAPI } from '../services/api'
@@ -30,9 +31,11 @@ import { templates } from '../data/templates'
 import { AITool } from '../types'
 import { useTranslation } from '../store/languageStore'
 import { useToastStore } from '../store/toastStore'
+import { useFavoritesStore } from '../store/favoritesStore'
 import SEO from '../components/SEO'
 import CreditModal from '../components/CreditModal'
 import ModernBackground from '../components/ModernBackground'
+import ToolCard from '../components/ToolCard'
 
 type ContentType = 'image' | 'video'
 
@@ -77,6 +80,9 @@ export default function Create() {
   const { user, updateCredits, fetchProfile } = useAuthStore()
   const [showCreditModal, setShowCreditModal] = useState(false)
   const [hasSubscription, setHasSubscription] = useState<boolean | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'video' | 'image' | 'audio' | 'my'>('all')
+  const [toolSearchQuery, setToolSearchQuery] = useState('')
+  const { favoriteTools, recentlyUsed, addRecentlyUsed } = useFavoritesStore()
   const t = useTranslation()
   const { success, info, error: showError } = useToastStore()
 
@@ -1125,6 +1131,139 @@ export default function Create() {
                   </div>
                 ))}
             </div>
+          </div>
+
+          {/* AI Tools Section */}
+          <div className="mt-12 sm:mt-16 md:mt-20">
+            <div className="mb-6 sm:mb-8">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                {t('aiToolsDashboard') || 'AI Alətləri'}
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
+                {t('accessTools') || 'Bütün AI video və şəkil yaratma alətlərinə çıxış əldə edin'}
+              </p>
+            </div>
+
+            {/* Search and Category Filter */}
+            <div className="mb-6 space-y-4">
+              {/* Search Bar */}
+              <div className="relative">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder={t('searchModels') || 'Modelləri axtar...'}
+                    value={toolSearchQuery}
+                    onChange={(e) => setToolSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-10 py-2.5 sm:py-3 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  {toolSearchQuery && (
+                    <button
+                      onClick={() => setToolSearchQuery('')}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                      title={t('clearSearch') || 'Təmizlə'}
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Category Filter */}
+              <div className="flex items-center space-x-2 flex-wrap gap-2">
+                {[
+                  { id: 'all' as const, name: t('allTools') || 'Hamısı' },
+                  { id: 'my' as const, name: t('myTools') || 'Mənim Alətlərim', icon: Heart },
+                  { id: 'video' as const, name: t('video') || 'Video' },
+                  { id: 'image' as const, name: t('image') || 'Şəkil' },
+                  { id: 'audio' as const, name: t('audio') || 'Audio' },
+                ].map((category) => {
+                  const Icon = category.icon
+                  const isMyCategory = category.id === 'my'
+                  const myToolsCount = isMyCategory ? new Set([...favoriteTools, ...recentlyUsed]).size : 0
+                  
+                  return (
+                    <button
+                      key={category.id}
+                      onClick={() => setSelectedCategory(category.id)}
+                      className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
+                        selectedCategory === category.id
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-100 dark:bg-dark-card text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-hover'
+                      } ${isMyCategory && myToolsCount === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      disabled={isMyCategory && myToolsCount === 0}
+                      title={isMyCategory && myToolsCount === 0 ? t('noFavoriteToolsYet') || 'Hələ sevimli alət yoxdur' : ''}
+                    >
+                      {Icon && <Icon className="w-4 h-4" />}
+                      <span>{category.name}</span>
+                      {isMyCategory && myToolsCount > 0 && (
+                        <span className="text-xs bg-blue-500/20 dark:bg-blue-400/20 px-2 py-0.5 rounded-full">
+                          {myToolsCount}
+                        </span>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Tools Grid */}
+            {(() => {
+              let filteredTools: AITool[]
+              
+              if (selectedCategory === 'my') {
+                const favoriteToolIds = new Set(favoriteTools)
+                const recentToolIds = new Set(recentlyUsed)
+                const myToolIds = new Set([...favoriteTools, ...recentlyUsed])
+                
+                filteredTools = aiTools.filter(tool => myToolIds.has(tool.id))
+                filteredTools.sort((a, b) => {
+                  const aIsFavorite = favoriteToolIds.has(a.id)
+                  const bIsFavorite = favoriteToolIds.has(b.id)
+                  if (aIsFavorite && !bIsFavorite) return -1
+                  if (!aIsFavorite && bIsFavorite) return 1
+                  
+                  const aIsRecent = recentToolIds.has(a.id)
+                  const bIsRecent = recentToolIds.has(b.id)
+                  if (aIsRecent && !bIsRecent) return -1
+                  if (!aIsRecent && bIsRecent) return 1
+                  
+                  return a.name.localeCompare(b.name)
+                })
+              } else if (selectedCategory === 'all') {
+                filteredTools = aiTools
+              } else {
+                filteredTools = aiTools.filter(tool => tool.category === selectedCategory)
+              }
+              
+              // Apply search filter
+              if (toolSearchQuery.trim()) {
+                const query = toolSearchQuery.toLowerCase()
+                filteredTools = filteredTools.filter(tool =>
+                  tool.name.toLowerCase().includes(query) ||
+                  tool.description.toLowerCase().includes(query) ||
+                  tool.id.toLowerCase().includes(query)
+                )
+              }
+              
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredTools.map((tool) => (
+                    <ToolCard 
+                      key={tool.id} 
+                      tool={tool} 
+                      onUse={(tool) => {
+                        addRecentlyUsed(tool.id)
+                        setSelectedTool(tool.id)
+                        setContentType(tool.category as ContentType)
+                        // Scroll to top
+                        window.scrollTo({ top: 0, behavior: 'smooth' })
+                      }} 
+                    />
+                  ))}
+                </div>
+              )
+            })()}
           </div>
         </div>
       </div>

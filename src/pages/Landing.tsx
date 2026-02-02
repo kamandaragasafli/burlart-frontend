@@ -28,8 +28,8 @@ export default function Landing() {
         try {
           const subscriptionInfo = await subscriptionAPI.getInfo()
           if (subscriptionInfo.has_subscription) {
-            // If user has subscription, redirect to dashboard
-            navigate('/dashboard')
+            // If user has subscription, redirect to create
+            navigate('/create')
           }
         } catch (error) {
           console.error('Error checking subscription:', error)

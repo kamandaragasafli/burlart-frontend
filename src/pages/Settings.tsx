@@ -99,11 +99,11 @@ export default function Settings() {
                   <span>{t('billing')}</span>
                 </Link>
                 <Link
-                  to="/dashboard"
+                  to="/create"
                   className="flex items-center space-x-2 px-3 py-2 bg-white dark:bg-dark-hover border border-gray-200 dark:border-dark-border rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-sm"
                 >
                   <Globe className="w-4 h-4" />
-                  <span>{t('dashboard')}</span>
+                  <span>{t('create')}</span>
                 </Link>
               </div>
             </div>

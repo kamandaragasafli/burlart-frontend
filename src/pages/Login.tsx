@@ -27,7 +27,7 @@ export default function Login() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard')
+      navigate('/create')
     }
   }, [isAuthenticated, navigate])
 
@@ -46,7 +46,7 @@ export default function Login() {
             }
             try {
               await loginWithGoogle(response.credential)
-              navigate('/dashboard')
+              navigate('/create')
             } catch (err: any) {
               console.error('Google login error:', err)
               const msg =
@@ -102,8 +102,8 @@ export default function Login() {
       console.log('[Login] Login completed, isAuthenticated:', authStatus)
       
       if (authStatus) {
-        console.log('[Login] Login successful, navigating to dashboard')
-        navigate('/dashboard', { replace: true })
+        console.log('[Login] Login successful, navigating to create')
+        navigate('/create', { replace: true })
       } else {
         console.warn('[Login] Login completed but isAuthenticated is false')
         setError('Login failed. Please try again.')

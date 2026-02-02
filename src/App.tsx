@@ -4,7 +4,6 @@ import { HelmetProvider } from 'react-helmet-async'
 import Header from './components/Header'
 import Home from './pages/Home'
 import Landing from './pages/Landing'
-import Dashboard from './pages/Dashboard'
 import ToolPage from './pages/ToolPage'
 import Create from './pages/Create'
 import Templates from './pages/Templates'
@@ -66,7 +65,6 @@ function AppContent() {
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/tool/:toolId" element={<ToolPage />} />
         <Route path="/create" element={<Create />} />
         <Route path="/templates" element={<Templates />} />

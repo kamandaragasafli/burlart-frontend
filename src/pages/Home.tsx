@@ -32,7 +32,7 @@ export default function Home() {
 
           <div className="flex items-center justify-center space-x-4 mb-16">
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/create')}
               className="flex items-center space-x-2 px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold text-lg transition-colors"
             >
               <Play className="w-5 h-5" />
