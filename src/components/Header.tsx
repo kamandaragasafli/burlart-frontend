@@ -5,7 +5,6 @@ import { useCreditStore } from '../store/creditStore'
 import { useAuthStore } from '../store/authStore'
 import { useTranslation } from '../store/languageStore'
 import { useSearchStore } from '../store/searchStore'
-import { subscriptionAPI } from '../services/api'
 import UpgradeModal from './UpgradeModal'
 import ProfileDropdown from './ProfileDropdown'
 import ThemeToggle from './ThemeToggle'
@@ -16,28 +15,8 @@ export default function Header() {
   const { toggleSearch } = useSearchStore()
   const navigate = useNavigate()
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
-  const [hasSubscription, setHasSubscription] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const t = useTranslation()
-
-  // Check subscription for authenticated users
-  useEffect(() => {
-    const checkSubscription = async () => {
-      if (isAuthenticated) {
-        try {
-          const subscriptionInfo = await subscriptionAPI.getInfo()
-          setHasSubscription(subscriptionInfo.has_subscription || false)
-        } catch (error) {
-          console.error('Error checking subscription:', error)
-          setHasSubscription(false)
-        }
-      } else {
-        setHasSubscription(false)
-      }
-    }
-
-    checkSubscription()
-  }, [isAuthenticated])
 
   return (
     <>

@@ -57,7 +57,6 @@ export default function Create() {
   })
   const [showToolsDropdown, setShowToolsDropdown] = useState(false)
   const [showControlsDropdown, setShowControlsDropdown] = useState(false)
-  const [toolSearchQuery, setToolSearchQuery] = useState('')
   const [showPromptMenu, setShowPromptMenu] = useState(false)
   const [showPromptLibrary, setShowPromptLibrary] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
