@@ -21,24 +21,7 @@ export default function Landing() {
   const [showCreditModal, setShowCreditModal] = useState(false)
   const [selectedTemplatePreview, setSelectedTemplatePreview] = useState<typeof templates[0] | null>(null)
 
-  // Check subscription and redirect if user has subscription
-  useEffect(() => {
-    const checkSubscription = async () => {
-      if (isAuthenticated) {
-        try {
-          const subscriptionInfo = await subscriptionAPI.getInfo()
-          if (subscriptionInfo.has_subscription) {
-            // If user has subscription, redirect to create
-            navigate('/create')
-          }
-        } catch (error) {
-          console.error('Error checking subscription:', error)
-        }
-      }
-    }
-
-    checkSubscription()
-  }, [isAuthenticated, navigate])
+  // Removed automatic redirect - let users visit landing page even with subscription
 
   // Scroll reveal animation
   useEffect(() => {
