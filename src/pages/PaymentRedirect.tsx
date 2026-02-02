@@ -50,9 +50,10 @@ export default function PaymentRedirect({ type }: { type: 'success' | 'error' })
           try {
             await fetchProfile()
             
-            // Check if user has subscription or credits (webhook completed payment)
+            // Check if user has credits (webhook completed payment)
+            // If credits increased, payment was completed
             const user = useAuthStore.getState().user
-            if (user && (user.credits > 0 || user.has_subscription)) {
+            if (user && user.credits > 0) {
               // Payment completed! Redirect to success page
               navigate('/checkout/success?type=subscription')
               return
