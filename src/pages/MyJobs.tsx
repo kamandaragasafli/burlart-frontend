@@ -103,6 +103,21 @@ export default function MyJobs() {
     }
   }, [user, loadJobs])
 
+  // Listen for job creation events from Create page
+  useEffect(() => {
+    const handleJobCreated = () => {
+      // Refresh jobs list when a new job is created
+      if (user) {
+        loadJobs()
+      }
+    }
+
+    window.addEventListener('jobCreated', handleJobCreated)
+    return () => {
+      window.removeEventListener('jobCreated', handleJobCreated)
+    }
+  }, [user, loadJobs])
+
   // Auto-refresh for pending/processing jobs
   useEffect(() => {
     if (!user) return

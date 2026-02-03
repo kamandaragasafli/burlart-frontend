@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { 
   Plus, 
   Sliders, 
@@ -41,6 +41,7 @@ type ContentType = 'image' | 'video'
 
 export default function Create() {
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const toolFromUrl = searchParams.get('tool')
   
   const [prompt, setPrompt] = useState('')
@@ -327,12 +328,19 @@ export default function Create() {
           await fetchProfile()
         }
         
+        // Dispatch event to refresh My Jobs page
+        window.dispatchEvent(new CustomEvent('jobCreated', { detail: { type: 'video', id: result.id } }))
+        
         // Set the generated video URL
         if (result.video_url) {
           setGeneratedVideo(result.video_url)
           success('Video uğurla yaradıldı! Kreditlər təsdiqləndi.')
         } else {
-          info('Video emal olunur. Kreditlər job tamamlananda təsdiqlənəcək.')
+          info('Video emal olunur. Kreditlər job tamamlananda təsdiqlənəcək. My Jobs səhifəsində statusu izləyə bilərsiniz.')
+          // Navigate to My Jobs page after a short delay to see the new job
+          setTimeout(() => {
+            navigate('/jobs')
+          }, 2000)
         }
       } else if (contentType === 'image') {
         // Prepare options for image
@@ -354,12 +362,19 @@ export default function Create() {
           await fetchProfile()
         }
         
+        // Dispatch event to refresh My Jobs page
+        window.dispatchEvent(new CustomEvent('jobCreated', { detail: { type: 'image', id: result.id } }))
+        
         // Set the generated image URL
         if (result.image_url) {
           setGeneratedImage(result.image_url)
           success('Şəkil uğurla yaradıldı! Kreditlər təsdiqləndi.')
         } else {
-          info('Şəkil emal olunur. Kreditlər job tamamlananda təsdiqlənəcək.')
+          info('Şəkil emal olunur. Kreditlər job tamamlananda təsdiqlənəcək. My Jobs səhifəsində statusu izləyə bilərsiniz.')
+          // Navigate to My Jobs page after a short delay to see the new job
+          setTimeout(() => {
+            navigate('/jobs')
+          }, 2000)
         }
       }
     } catch (error: any) {
