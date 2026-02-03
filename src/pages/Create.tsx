@@ -1029,13 +1029,39 @@ export default function Create() {
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 sm:mb-3 gap-2">
                 <h3 className="text-gray-900 dark:text-white font-medium text-sm sm:text-base">{t('generatedImage') || 'Generated Image'}</h3>
                 <button
-                  onClick={() => {
-                    const link = document.createElement('a')
-                    link.href = generatedImage
-                    link.download = `burlart-image-${Date.now()}.png`
-                    document.body.appendChild(link)
-                    link.click()
-                    document.body.removeChild(link)
+                  onClick={async () => {
+                    try {
+                      // Fetch image as blob to avoid CORS issues and hide fal.ai URL
+                      const response = await fetch(generatedImage, {
+                        mode: 'cors',
+                        credentials: 'omit'
+                      })
+                      const blob = await response.blob()
+                      const blobUrl = URL.createObjectURL(blob)
+                      
+                      const link = document.createElement('a')
+                      link.href = blobUrl
+                      link.download = `burlart-image-${Date.now()}.png`
+                      link.style.display = 'none'
+                      document.body.appendChild(link)
+                      link.click()
+                      document.body.removeChild(link)
+                      
+                      // Clean up blob URL
+                      setTimeout(() => URL.revokeObjectURL(blobUrl), 100)
+                    } catch (error) {
+                      console.error('Download error:', error)
+                      // Fallback: try direct download
+                      const link = document.createElement('a')
+                      link.href = generatedImage
+                      link.download = `burlart-image-${Date.now()}.png`
+                      link.target = '_blank'
+                      link.rel = 'noopener noreferrer'
+                      link.style.display = 'none'
+                      document.body.appendChild(link)
+                      link.click()
+                      document.body.removeChild(link)
+                    }
                   }}
                   className="flex items-center space-x-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs sm:text-sm font-medium transition-colors w-full sm:w-auto justify-center"
                 >
@@ -1046,7 +1072,10 @@ export default function Create() {
               <img 
                 src={generatedImage} 
                 alt="Generated" 
-                className="w-full rounded-lg max-h-[600px] object-contain mx-auto"
+                className="w-full rounded-lg max-h-[600px] object-contain mx-auto cursor-default"
+                onClick={(e) => e.preventDefault()}
+                onContextMenu={(e) => e.preventDefault()}
+                draggable={false}
               />
             </div>
           )}

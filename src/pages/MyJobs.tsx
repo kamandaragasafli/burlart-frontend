@@ -149,14 +149,39 @@ export default function MyJobs() {
     }
   }
 
-  const handleDownload = (url: string, filename: string) => {
-    const link = document.createElement('a')
-    link.href = url
-    link.download = filename
-    link.target = '_blank'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+  const handleDownload = async (url: string, filename: string) => {
+    try {
+      // Fetch image/video as blob to avoid CORS issues and hide fal.ai URL
+      const response = await fetch(url, {
+        mode: 'cors',
+        credentials: 'omit'
+      })
+      const blob = await response.blob()
+      const blobUrl = URL.createObjectURL(blob)
+      
+      const link = document.createElement('a')
+      link.href = blobUrl
+      link.download = filename
+      link.style.display = 'none'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      
+      // Clean up blob URL
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 100)
+    } catch (error) {
+      console.error('Download error:', error)
+      // Fallback: try direct download
+      const link = document.createElement('a')
+      link.href = url
+      link.download = filename
+      link.target = '_blank'
+      link.rel = 'noopener noreferrer'
+      link.style.display = 'none'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }
   }
 
   if (!user) {
@@ -271,13 +296,18 @@ export default function MyJobs() {
                       <video
                         src={job.video_url}
                         controls
-                        className="w-full rounded-lg max-w-2xl"
+                        className="w-full rounded-lg max-w-2xl cursor-default"
+                        onClick={(e) => e.preventDefault()}
+                        onContextMenu={(e) => e.preventDefault()}
                       />
                     ) : (
                       <img
                         src={job.image_url}
                         alt={job.prompt}
-                        className="w-full rounded-lg max-w-2xl"
+                        className="w-full rounded-lg max-w-2xl cursor-default"
+                        onClick={(e) => e.preventDefault()}
+                        onContextMenu={(e) => e.preventDefault()}
+                        draggable={false}
                       />
                     )}
                   </div>
