@@ -149,6 +149,35 @@ export default function MyJobs() {
     }
   }
 
+  // Sanitize error messages to hide technical details
+  const sanitizeErrorMessage = (errorMessage: string): string => {
+    if (!errorMessage) return "Generation failed. Please try again."
+    
+    const lower = errorMessage.toLowerCase()
+    
+    // Hide fal.ai references
+    if (lower.includes('fal.ai') || lower.includes('fal_client') || lower.includes('falclient') || 
+        lower.includes('falclienthttperror') || lower.includes('fal.ai/dashboard') || 
+        lower.includes('fal.ai/billing') || lower.includes('top up your balance')) {
+      if (lower.includes('exhausted balance') || lower.includes('locked') || lower.includes('balance')) {
+        return "Generation service is temporarily unavailable. Please try again later."
+      }
+      return "Generation failed. Please try again."
+    }
+    
+    // Hide URLs
+    if (errorMessage.includes('http://') || errorMessage.includes('https://')) {
+      return "Generation failed. Please try again."
+    }
+    
+    // Hide technical error types
+    if (lower.includes('httperror') || lower.includes('http error')) {
+      return "Generation service is temporarily unavailable. Please try again later."
+    }
+    
+    return errorMessage
+  }
+
   const handleDownload = async (url: string, filename: string) => {
     try {
       // Fetch image/video as blob to avoid CORS issues and hide fal.ai URL
@@ -248,7 +277,19 @@ export default function MyJobs() {
           </div>
         ) : filteredJobs.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400">{t('noJobsFound') || 'No jobs found'}</p>
+            <p className="text-gray-600 dark:text-gray-400">
+              {filter === 'all' 
+                ? (t('noJobsFound') || 'No jobs found')
+                : `No ${getStatusText(filter)} jobs found.`}
+            </p>
+            {filter !== 'all' && (
+              <button
+                onClick={() => setFilter('all')}
+                className="mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors"
+              >
+                Show All Jobs
+              </button>
+            )}
           </div>
         ) : (
           <div className="space-y-4">
@@ -317,7 +358,7 @@ export default function MyJobs() {
                 {job.status === 'failed' && job.error_message && (
                   <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                     <p className="text-sm text-red-700 dark:text-red-400">
-                      <strong>{t('reason')}</strong> {job.error_message}
+                      <strong>{t('reason')}</strong> {sanitizeErrorMessage(job.error_message)}
                     </p>
                   </div>
                 )}
