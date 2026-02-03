@@ -205,33 +205,55 @@ export default function Create() {
     try {
       // Create object URL for preview
       const url = URL.createObjectURL(file)
-      console.log('Created object URL:', url)
-      setReferenceImage(url)
+      console.log('Created object URL for preview:', url)
       
-      // Only auto-switch to video mode if we're not already in image mode
-      // If in image mode, stay in image mode (for image editing models)
-      if (contentType !== 'image') {
-        // Auto-switch to video mode (image-to-video) when user uploads an image
-        setContentType('video')
+      // Convert file to base64 for sending to backend
+      const reader = new FileReader()
+      reader.onload = () => {
+        const base64String = reader.result as string
+        console.log('File converted to base64, length:', base64String.length)
+        // Store base64 for backend
+        setReferenceImage(base64String)
         
-        // Auto-select an image-to-video model if available
-        const imageToVideoTools = aiTools.filter(tool => tool.category === 'video' && tool.requiresImage && tool.enabled)
-        if (imageToVideoTools.length > 0) {
-          // Select the first available image-to-video tool
-          setSelectedTool(imageToVideoTools[0].id)
+        // Clean up the blob URL since we're using base64
+        URL.revokeObjectURL(url)
+        
+        // Only auto-switch to video mode if we're not already in image mode
+        // If in image mode, stay in image mode (for image editing models)
+        if (contentType !== 'image') {
+          // Auto-switch to video mode (image-to-video) when user uploads an image
+          setContentType('video')
+          
+          // Auto-select an image-to-video model if available
+          const imageToVideoTools = aiTools.filter(tool => tool.category === 'video' && tool.requiresImage && tool.enabled)
+          if (imageToVideoTools.length > 0) {
+            // Select the first available image-to-video tool
+            setSelectedTool(imageToVideoTools[0].id)
+          }
+        } else {
+          // We're in image mode, auto-select an image editing model if available
+          const imageEditTools = aiTools.filter(tool => tool.category === 'image' && tool.requiresImage && tool.enabled)
+          if (imageEditTools.length > 0) {
+            // Select the first available image editing tool
+            setSelectedTool(imageEditTools[0].id)
+          }
         }
-      } else {
-        // We're in image mode, auto-select an image editing model if available
-        const imageEditTools = aiTools.filter(tool => tool.category === 'image' && tool.requiresImage && tool.enabled)
-        if (imageEditTools.length > 0) {
-          // Select the first available image editing tool
-          setSelectedTool(imageEditTools[0].id)
+        
+        success('Şəkil uğurla yükləndi!')
+      }
+      
+      reader.onerror = () => {
+        console.error('Error reading file:', reader.error)
+        showError('Şəkil yüklənərkən xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.')
+        URL.revokeObjectURL(url)
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ''
         }
       }
       
-      success('Şəkil uğurla yükləndi!')
+      reader.readAsDataURL(file)
     } catch (error) {
-      console.error('Error creating object URL:', error)
+      console.error('Error processing file:', error)
       showError('Şəkil yüklənərkən xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.')
       if (fileInputRef.current) {
         fileInputRef.current.value = ''
@@ -498,9 +520,6 @@ export default function Create() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (referenceImage && referenceImage.startsWith('blob:')) {
-                      URL.revokeObjectURL(referenceImage)
-                    }
                     setReferenceImage(null)
                     if (fileInputRef.current) {
                       fileInputRef.current.value = ''
