@@ -455,7 +455,23 @@ export default function Create() {
           <div className="relative mb-6 sm:mb-8">
             <textarea
               value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
+              onChange={(e) => {
+                setPrompt(e.target.value)
+                // Clear generated content when prompt changes
+                if (e.target.value.trim() !== prompt.trim()) {
+                  setGeneratedImage(null)
+                  setGeneratedVideo(null)
+                }
+              }}
+              onKeyDown={(e) => {
+                // Enter key submits (Shift+Enter for new line)
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault()
+                  if (prompt.trim() && !isGenerating) {
+                    handleCreate()
+                  }
+                }
+              }}
               placeholder={t('createPromptPlaceholder') || 'What do you want to create?'}
               className={`w-full h-32 sm:h-40 md:h-48 bg-white dark:bg-dark-card border-2 border-gray-200 dark:border-dark-border rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm sm:text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none shadow-sm ${
                 referenceImage ? 'pl-20 sm:pl-24 pr-10 sm:pr-12 pt-4 sm:pt-6 pb-4 sm:pb-6' : 'p-4 sm:p-6'
@@ -508,43 +524,6 @@ export default function Create() {
               </button>
             )}
           </div>
-
-          {generatedVideo && (
-            <div className="mb-4 sm:mb-6 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg p-3 sm:p-4 shadow-sm">
-              <h3 className="text-gray-900 dark:text-white font-medium mb-2 sm:mb-3 text-sm sm:text-base">{t('generatedVideo') || 'Generated Video'}</h3>
-              <video 
-                src={generatedVideo} 
-                controls 
-                className="w-full rounded-lg"
-              />
-            </div>
-          )}
-          {generatedImage && (
-            <div className="mb-4 sm:mb-6 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg p-3 sm:p-4 shadow-sm">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 sm:mb-3 gap-2">
-                <h3 className="text-gray-900 dark:text-white font-medium text-sm sm:text-base">{t('generatedImage') || 'Generated Image'}</h3>
-                <button
-                  onClick={() => {
-                    const link = document.createElement('a')
-                    link.href = generatedImage
-                    link.download = `burlart-image-${Date.now()}.png`
-                    document.body.appendChild(link)
-                    link.click()
-                    document.body.removeChild(link)
-                  }}
-                  className="flex items-center space-x-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs sm:text-sm font-medium transition-colors w-full sm:w-auto justify-center"
-                >
-                  <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  <span>{t('download') || 'Download'}</span>
-                </button>
-              </div>
-              <img 
-                src={generatedImage} 
-                alt="Generated" 
-                className="w-full rounded-lg"
-              />
-            </div>
-          )}
 
           {/* Action Buttons Row */}
           <div className="flex items-center justify-between mb-3 sm:mb-4 md:mb-6 gap-2">
@@ -1031,6 +1010,44 @@ export default function Create() {
                   : (t('generatingImage') || 'Generating image... This may take a few moments.')
                 }
               </p>
+            </div>
+          )}
+
+          {/* Generated Content - Above Templates */}
+          {generatedVideo && (
+            <div className="mt-6 sm:mt-8 mb-4 sm:mb-6 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg p-3 sm:p-4 shadow-sm">
+              <h3 className="text-gray-900 dark:text-white font-medium mb-2 sm:mb-3 text-sm sm:text-base">{t('generatedVideo') || 'Generated Video'}</h3>
+              <video 
+                src={generatedVideo} 
+                controls 
+                className="w-full rounded-lg max-h-[600px] object-contain"
+              />
+            </div>
+          )}
+          {generatedImage && (
+            <div className="mt-6 sm:mt-8 mb-4 sm:mb-6 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg p-3 sm:p-4 shadow-sm">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 sm:mb-3 gap-2">
+                <h3 className="text-gray-900 dark:text-white font-medium text-sm sm:text-base">{t('generatedImage') || 'Generated Image'}</h3>
+                <button
+                  onClick={() => {
+                    const link = document.createElement('a')
+                    link.href = generatedImage
+                    link.download = `burlart-image-${Date.now()}.png`
+                    document.body.appendChild(link)
+                    link.click()
+                    document.body.removeChild(link)
+                  }}
+                  className="flex items-center space-x-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs sm:text-sm font-medium transition-colors w-full sm:w-auto justify-center"
+                >
+                  <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span>{t('download') || 'Download'}</span>
+                </button>
+              </div>
+              <img 
+                src={generatedImage} 
+                alt="Generated" 
+                className="w-full rounded-lg max-h-[600px] object-contain mx-auto"
+              />
             </div>
           )}
 
